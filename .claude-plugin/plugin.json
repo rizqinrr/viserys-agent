@@ -5,8 +5,8 @@
   "author": {
     "name": "rizqinrr"
   },
-  "homepage": "https://github.com/rizqinrr/viserys",
-  "repository": "https://github.com/rizqinrr/viserys",
+  "homepage": "https://github.com/rizqinrr/viserys-agent",
+  "repository": "https://github.com/rizqinrr/viserys-agent",
   "commands": ["./.claude/commands", "./commands"],
   "skills": "./skills"
 }

@@ -12,10 +12,10 @@
       "version": "0.1.0",
       "source": {
         "source": "github",
-        "repo": "rizqinrr/viserys"
+        "repo": "rizqinrr/viserys-agent"
       },
       "description": "Engineering workflow skills covering every phase of software development: spec, plan, build, verify, review, and ship.",
-      "homepage": "https://github.com/rizqinrr/viserys",
+      "homepage": "https://github.com/rizqinrr/viserys-agent",
       "keywords": ["skills", "agents", "engineering", "spec", "tdd", "review", "ship"]
     }
   ]
