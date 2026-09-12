@@ -16,6 +16,7 @@ The pack is plain Markdown plus a small set of validator scripts. It carries no 
 | `scripts/` | Structural validators and the eval runner |
 | `hooks/` | Session lifecycle hooks |
 | `docs/` | Internal documentation for this pack |
+| `.opencode/` | OpenCode adapter: the `viserys` primary agent and skill path registration |
 
 ## Lifecycle
 

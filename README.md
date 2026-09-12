@@ -92,6 +92,18 @@ DEFINE -> PLAN -> BUILD -> VERIFY -> REVIEW -> SHIP
 | `agents/security-auditor.md` | Vulnerability detection, threat modeling, OWASP assessment |
 | `agents/web-performance-auditor.md` | Core Web Vitals audit in quick and deep modes |
 
+## Viserys mode in OpenCode
+
+This repo ships an OpenCode agent definition at `.opencode/agent/viserys.md` and registers its skills through `.opencode/opencode.json`.
+
+To activate it:
+
+1. Clone this repository.
+2. Open the repository folder with OpenCode.
+3. Press `Tab` and select `viserys`.
+
+The `viserys` agent runs in primary mode, so it appears in the agent list. Its prompt routes every request through the lifecycle skills and enforces the check-for-a-skill-first rule. The skill paths are registered by `.opencode/opencode.json`, so the pack's 25 skills load without any global configuration.
+
 ## Usage
 
 **Skill-aware agents** (Claude Code, OpenCode, Cursor, and others): point the agent at `skills/`, or copy that directory into the agent's native skills location. The agent invokes a skill when a task matches.
