@@ -1,0 +1,12 @@
+{
+  "name": "viserys",
+  "version": "0.1.0",
+  "description": "Engineering workflow skills for AI coding agents - covering the full software development lifecycle from spec to ship.",
+  "author": {
+    "name": "rizqinrr"
+  },
+  "homepage": "https://github.com/rizqinrr/viserys",
+  "repository": "https://github.com/rizqinrr/viserys",
+  "commands": ["./.claude/commands", "./commands"],
+  "skills": "./skills"
+}
