@@ -1,6 +1,6 @@
 ---
 name: get-tasks
-description: Breaks an approved PRD into ordered, independently verifiable tasks. Use when a PRD or spec exists and you need an executable task breakdown. Use when the user says "get tasks", "breakdown PRD", "pecah jadi task", or "bikin task list". Produces one detailed file per task with acceptance criteria, validation steps, dependencies, and rollback.
+description: Turns an approved PRD into a tracked set of task files. Use when a PRD exists at docs/prd/ and needs executable tasks before implementation. Use when the user says "get tasks", "breakdown PRD", "pecah jadi task", or "bikin task list". Produces one detailed file per task with acceptance criteria, five-way verification, blocking edges, rollback, a plan document indexing them, and a parallelization classification.
 ---
 
 # Get Tasks
@@ -19,7 +19,32 @@ This skill draws from three sources:
 2. **Validation-driven execution** — every task declares how it will be verified across multiple validation types, not just "tests pass", and carries a replan procedure for when a step fails.
 3. **Blocking edges and tracer bullets** — each task states explicitly what blocks it, so any task whose blockers are done can start immediately.
 
-The output is a directory of task files: `tasks/<name>/task-01.md`, `task-02.md`, and so on, numbered in dependency order. Blocker tasks get the low numbers.
+The output is a directory of task files: `tasks/<name>/task-01.md`, `task-02.md`, and so on, numbered in dependency order, plus `tasks/<name>/plan.md` indexing them. Blocker tasks get the low numbers.
+
+## Scope of This Skill
+
+`get-tasks` is deliberately comprehensive. It absorbs what several narrower skills each did partially, so that a user only needs one skill to go from an approved PRD to a tracked, executable plan. Everything in here is relevant to that single job:
+
+| Concern | Where it is handled |
+|---|---|
+| Reading the PRD and extracting commitments | Phase 1 |
+| Dependency structure and ordering | Phase 2 |
+| Vertical slicing and tracer bullets | Phase 3 |
+| Wide refactors (expand, migrate, contract) | Phase 3 |
+| Per-task specification | Phase 4 |
+| Sizing and splitting rules | Phase 5 |
+| Checkpoints and gates | Phase 5 |
+| Parallelization classification | Parallelization Taxonomy |
+| Human-readable plan summary, risks, decisions | Phase 6 |
+| Tracker vs. file target | Task List Target |
+| User approval before writing | Phase 7 |
+| Writing, syncing, and verifying artifacts | Phase 8 |
+| Handling failure and replanning | Replanning When a Task Fails |
+
+It is long by design. The length is the point: a breakdown that leaves any of these implicit produces tasks that look finished and are not. If you are tempted to skim to the template, read Phases 2, 3, and 5 instead — those are where breakdowns actually fail.
+
+What this skill does **not** do: it does not write code, does not run the tasks, and does not replace the PRD. It converts one document into a set of documents.
+
 
 ## When to Use
 
@@ -40,7 +65,7 @@ Use this skill when:
 
 ## The Process
 
-`get-tasks` runs in eight phases. Each phase has an exit condition. Do not advance past a phase whose exit condition is unmet.
+`get-tasks` runs in nine phases. Each phase has an exit condition. Do not advance past a phase whose exit condition is unmet.
 
 ```
 0. Locate the PRD       -> which document is the source?
@@ -49,9 +74,13 @@ Use this skill when:
 3. Vertical slices      -> tracer bullets, not horizontal layers
 4. Write each task      -> one file per task, fully specified
 5. Order, size, checkpoint -> sequence, size, and verification gates
-6. Quiz the user        -> granularity, blocking edges, merge or split
-7. Write and verify     -> files on disk, todos synced, validators green
+6. Write the plan doc   -> the human-readable summary that indexes the tasks
+7. Quiz the user        -> granularity, blocking edges, merge or split
+8. Write and verify     -> files on disk, todos synced, validators green
 ```
+
+**Planning is read-only.** Phases 0 through 7 produce documents and questions, not code. Do not create, edit, or delete any source file during those phases. Writing task files under `tasks/` is the only filesystem change allowed before the user approves. If you find yourself fixing a bug or adding a function while breaking down work, stop: that is Phase 8 territory, or it is `incremental-implementation` territory, and it belongs to a task you have not written yet.
+
 
 ---
 
@@ -306,46 +335,152 @@ Place a final checkpoint that verifies the PRD's **Success Criteria** directly, 
 
 ---
 
-### Phase 6: Quiz the User
+### Parallelization Taxonomy
 
-Present the proposed breakdown before writing anything to disk. Show a compact table, not the full task files:
+Before writing the plan document, classify the tasks by how they may run. Agents and humans both parallelize badly by default, so make the classification explicit rather than leaving it to whoever picks up the work.
+
+| Category | Meaning | Examples |
+|---|---|---|
+| **Safe to parallelize** | No shared state, no shared contract, independent failure domains | Independent feature slices, tests for already-implemented code, documentation |
+| **Must be sequential** | Ordering is load-bearing; running early corrupts state or breaks the build | Database migrations, shared state changes, dependency chains, schema edits |
+| **Needs coordination** | Parallelizable only after a shared decision is frozen | Features that share an API contract — define the contract first, then parallelize |
+
+Rules:
+
+- **A task is in exactly one category.** If it looks parallelizable but touches a contract another task also touches, it is "needs coordination" until the contract is frozen.
+- **Record the classification in the plan document**, per task or per phase.
+- **Coordination tasks get an explicit prerequisite task** that defines the shared contract. That prerequisite is sequential by definition.
+
+---
+
+### Phase 6: Write the Plan Document
+
+The task files are the executable units. The plan document is the human-readable summary that indexes them and records what the task files deliberately omit: design decisions, risks, and unresolved questions.
+
+Write `tasks/<name>/plan.md`:
 
 ```markdown
-| # | Task | Size | Blocked by | What it delivers |
-|---|---|---|---|---|
-| 01 | User registration | M | — | A user can create an account |
-| 02 | Login and session | M | 01 | A user can log in and stay logged in |
-| 03 | Password reset | S | 02 | A user can recover access |
+# Implementation Plan: <Project or Feature Name>
+
+## Overview
+
+One paragraph. What this breakdown covers, and which PRD it came from
+(`docs/prd/<name>.md`).
+
+## Architecture Decisions
+
+- <Decision and the reasoning that produced it>
+- <Decision and the reasoning that produced it>
+
+These are the decisions taken during breakdown that the PRD left open or that
+only became visible once the work was sliced. Anything already settled in the
+PRD's Technical Decisions section is not repeated here.
+
+## Phases
+
+### Phase 1: <Foundation | Core | Polish | ...>
+
+- [ ] Task 01: <title>
+- [ ] Task 02: <title>
+
+**Checkpoint:** <what must be true before Phase 2 starts>
+
+### Phase 2: <...>
+
+- [ ] Task 03: <title>
+
+**Checkpoint:** <what must be true before Phase 3 starts>
+
+### Phase 3: <...>
+
+- [ ] Task NN: <title>
+
+**Final checkpoint:** every Success Criterion from the PRD is verified.
+
+## Parallelization
+
+| Task | Category | Notes |
+|---|---|---|
+| 01 | Must be sequential | Defines the schema everything else reads |
+| 02 | Safe to parallelize | Independent slice |
+| 03 | Needs coordination | Shares the billing contract with 04 - freeze it first |
+
+## Risks and Mitigations
+
+| Risk | Impact | Mitigation |
+|---|---|---|
+| <What could go wrong> | <High/Med/Low> | <How we reduce or detect it> |
+
+## Open Questions
+
+- <Question that still needs human input, and which task it blocks>
+
+## Task Index
+
+| # | Task | Size | Blocked by | Category | File |
+|---|---|---|---|---|---|
+| 01 | <title> | M | — | sequential | `task-01.md` |
+| 02 | <title> | S | 01 | parallel | `task-02.md` |
+```
+
+Rules:
+
+- **Phase grouping is by risk and dependency, not by layer.** A "Foundation / Core / Polish" split is about what must be stable before the next thing can start. Never group by "all backend", "all frontend".
+- **The Task Index never restates the task body.** It points at the file. The file is the source of truth.
+- **Risks are per-breakdown, not per-task.** A task-specific worry goes in that task's Notes. This table is for what threatens the plan as a whole.
+- **Open Questions name the task they block.** An unblocked question is just curiosity.
+- **The plan document is optional only if the user says so.** Default to writing it; it is the artifact a human reads instead of the task files.
+
+**Exit condition:** `tasks/<name>/plan.md` exists with all seven sections populated, and it agrees with the task files.
+
+---
+
+### Phase 7: Quiz the User
+
+Present the proposed breakdown before writing the files. Show a compact table, not the full task bodies:
+
+```markdown
+| # | Task | Size | Blocked by | Category | What it delivers |
+|---|---|---|---|---|---|
+| 01 | User registration | M | — | sequential | A user can create an account |
+| 02 | Login and session | M | 01 | needs coordination | A user can log in and stay logged in |
+| 03 | Password reset | S | 02 | parallel | A user can recover access |
 ```
 
 Then ask:
 
 - **Is the granularity right?** Too coarse (tasks that hide real work) or too fine (tasks that are not worth their own file)?
 - **Are the blocking edges correct?** Does each task depend only on tasks that genuinely gate it? A wrong blocker either serializes work that could run in parallel or lets a task start before its foundation exists.
+- **Are the parallelization categories right?** Anything marked parallel that touches shared state?
 - **Should anything be merged or split?** Adjacent XS tasks might be one task; an M that hides two subsystems might be two.
 - **Is anything missing?** Compare against the PRD's User Stories and Success Criteria once more.
 
-Iterate until the user approves. Do not write files before approval — the table is cheap to change, the files are not.
+Iterate until the user approves. Do not write the task files before approval — the table is cheap to change, the files are not. Writing `plan.md` before approval is allowed and often helps: it gives the user something concrete to object to.
 
 **Exit condition:** the user has approved the breakdown, explicitly.
 
 ---
 
-### Phase 7: Write, Sync, and Verify
+### Phase 8: Write, Sync, and Verify
 
-Write the approved breakdown.
+Write the approved files.
 
-1. **Create `tasks/<name>/` and write one file per task**, numbered from `01` in dependency order. Write checkpoints as their own files.
-2. **Optionally write `tasks/<name>/index.md`** listing the tasks with their sizes and blockers. Keep it as an index only — never duplicate the task bodies there.
+1. **Create `tasks/<name>/` and write one file per task**, numbered from `01` in dependency order. Write checkpoints as their own files (`checkpoint-01.md`, ...).
+2. **Write `tasks/<name>/plan.md`** per Phase 6. Keep its Task Index in step with the files on disk.
 3. **Sync the todo list.** Mirror the tasks into `todowrite`, one item per task, in order. Mark the first task and any blocking tasks `high`, parallel tasks `medium`, and optional tasks `low`. Keep the todo list and the task files in step; drift between them is a red flag.
-4. **Do not overwrite an approved breakdown of different work.** Before writing, check whether `tasks/<name>/` already exists with unchecked tasks:
-   - Same work being revised -> update in place.
-   - Different work -> **stop and ask.** The existing tasks may be mid-execution. Present the conflict and let the user decide.
+4. **Never overwrite an existing breakdown of different work.** Before writing, check whether `tasks/<name>/` already exists with unchecked tasks:
+   - **Same work being revised** — the user asked to revise or extend this breakdown -> update the existing files in place.
+   - **Different work** — the directory belongs to another plan -> **stop and ask.** Do not delete, overwrite, or rename on your own. Present the conflict and let the user choose: finish the old breakdown first, explicitly discard it, or direct the new breakdown to a different `<name>`.
+   - The same rule applies to a tracker target: never bulk-close or delete another plan's open items to make room for new ones.
 5. **Verify what you wrote:**
    - Every task file exists and has no blank sections
    - Every `Blocked by` value names a task that exists, or says None
    - Task numbers start at `01` and are contiguous
+   - No task exceeds **L**; anything that drifted to XL during writing is split
+   - No task's "Files likely touched" lists more than ~5 files; more means it is two tasks
+   - Every task has a non-empty Rollback section
    - The final checkpoint references the PRD's success criteria
+   - `plan.md`'s Task Index matches the files on disk
    - The todo list matches the task files
 
 **Exit condition:** files written, todos synced, verification checks all pass, and the user knows the next step.
@@ -388,6 +523,23 @@ Breakdown is a living document. When a task fails during execution, follow this 
 
 Never silently reorder tasks or drop one. A dropped task is a dropped requirement.
 
+## Task List Target
+
+The task list target is where tasks are recorded. It is defined once, here; every reference in this skill defers to it.
+
+- **Default: files under `tasks/<name>/`.** One file per task, plus `plan.md`. This is the convention `get-prd` feeds into and the one downstream skills expect.
+- **External tracker:** if the project's agent rules (`AGENTS.md`, `CLAUDE.md`) or the user designates an issue tracker (GitHub Issues, Jira, Linear, `bd`/beads), publish one item per task instead of, or in addition to, the files. Map the task template onto the tracker's fields:
+  - Acceptance criteria and verification steps -> the item body
+  - `Blocked by` -> the tracker's native linking mechanism (`bd dep add`, "blocked by", sub-issue)
+  - Size and category -> labels
+  - Checkpoints -> tracker items, or a checklist in `plan.md` if the tracker has no equivalent
+
+Rules that apply to both targets:
+
+- **Choose one target, do not scatter.** Writing both `tasks/<name>/` and tracker items, then updating only one, is how task lists rot. If both exist, `plan.md` names the tracker as the source of truth for status.
+- **Note the target in `plan.md`** (for example "Status tracked in Linear project FOO") so a later session knows where to look. Keep the plan document's Task Index as an index of item ids or links, never a duplicate checklist.
+- **Never bulk-close another plan's open items** to make room for a new breakdown. The same "stop and ask" rule from Phase 8 applies.
+
 ## Common Rationalizations
 
 | Rationalization | Reality |
@@ -404,6 +556,12 @@ Never silently reorder tasks or drop one. A dropped task is a dropped requiremen
 | "This is too small to be its own task" | Then fold it into a neighbour — do not leave it implicit. Implicit work is the work that gets forgotten. |
 | "I'll skip the checkpoint, tests pass anyway" | Checkpoints catch the class of failure tests do not: two tasks that each pass but do not compose. |
 | "I'll reference the task file path" | Renames break paths. Reference by number. |
+| "The plan document is redundant, the task files have everything" | The task files omit design decisions, plan-level risks, and open questions on purpose — they are per-task artifacts. The plan document is the only place a human can read the whole shape in one screen. |
+| "I'll skip the parallelization table, it is obvious" | It is obvious to you now and invisible to whoever picks up task 07 tomorrow. Classify explicitly. |
+| "Everything can be parallel" | Only if nothing shares state or a contract. If two tasks both touch the billing contract, they are sequential until it is frozen. |
+| "I'll set up the tracker and the files, keep both in sync manually" | You will update one and forget the other. Pick one target and declare it in `plan.md`. |
+| "Design decisions can go in the task they affect" | Then no one can find them without reading every task. Decisions that span tasks belong in the plan document. |
+| "The user said go, so I can start implementing while I write the tasks" | Planning is read-only. Starting implementation during breakdown produces tasks describing code that already exists — the breakdown stops being a plan and becomes a changelog. |
 
 ## Red Flags
 
@@ -413,6 +571,7 @@ Never silently reorder tasks or drop one. A dropped task is a dropped requiremen
 - A task with an empty Rollback section
 - A task whose Source line points at nothing in the PRD
 - Tasks that are all XL, or a breakdown where nothing is smaller than L
+- A task listing more than ~5 files in "Files likely touched"
 - Horizontal slicing presented as a plan (all schema, then all API, then all UI)
 - Blockers written as "obvious" or inferred from position rather than stated
 - Checkpoints missing entirely, or a final checkpoint that does not map to the PRD's Success Criteria
@@ -421,6 +580,12 @@ Never silently reorder tasks or drop one. A dropped task is a dropped requiremen
 - A `Blocked by` value naming a task that does not exist
 - Overwriting an existing `tasks/<name>/` directory that still has unchecked tasks, without asking
 - Writing files before the user approved the table
+- No `plan.md`, or a `plan.md` whose Task Index disagrees with the files on disk
+- No parallelization classification, or everything marked parallel
+- Risk and Open Questions sections missing or empty in `plan.md`
+- Both a file target and a tracker target in use, with only one updated
+- Source code being edited during Phases 0 to 7 (planning is read-only)
+- Implementing a task while still breaking the work down
 
 ## Verification
 
@@ -434,11 +599,17 @@ Before declaring `get-tasks` complete:
 - [ ] Every task's Verification block lists tests, build, output, regressions, and manual check
 - [ ] Every task has a non-empty Rollback section
 - [ ] Every task has a size, and none is XL
+- [ ] No task lists more than ~5 files in "Files likely touched"
 - [ ] Every `Blocked by` value names an existing task or says None
 - [ ] Checkpoints are placed every two to three tasks
 - [ ] A final checkpoint maps directly to the PRD's Success Criteria
-- [ ] The user approved the breakdown table before any file was written
+- [ ] Every task is classified in the parallelization taxonomy
+- [ ] `tasks/<name>/plan.md` exists with Overview, Architecture Decisions, Phases, Parallelization, Risks and Mitigations, Open Questions, and Task Index
+- [ ] `plan.md`'s Task Index matches the files on disk
+- [ ] The task list target is declared in `plan.md`, and only one target is in active use
+- [ ] The user approved the breakdown table before any task file was written
 - [ ] No pre-existing breakdown for different work was overwritten without asking
+- [ ] No source file was edited during Phases 0 to 7
 - [ ] `todowrite` is synced with the task files
 - [ ] The handoff skill and the first task to start are stated
 
@@ -516,15 +687,62 @@ Empty-state behaviour is not specified in the PRD. Defaulting to an explicit
 
 **Phase 5:** Task 02 is M, blocked by Task 01, ordered second. A checkpoint is placed after Task 03.
 
-**Phase 6 table shown to the user:**
+**Parallelization classification:** Task 01 is "must be sequential" (it defines the schema every other task reads). Tasks 02 and 03 are "safe to parallelize" once 01 lands. Task 04 is "needs coordination" — it reads both the list query from 02 and the signal model from 03, so it waits for both.
+
+**Phase 6, an excerpt from `tasks/experiment-tracker/plan.md`:**
 
 ```markdown
-| # | Task | Size | Blocked by | What it delivers |
-|---|---|---|---|---|
-| 01 | Storage and schema | M | — | Experiments can be stored and read |
-| 02 | Experiment list view | M | 01 | A user can see all running experiments |
-| 03 | Signal capture | M | 01 | A user can record a signal |
-| 04 | Signal display in list | S | 02, 03 | The list shows each experiment's latest signal |
+# Implementation Plan: Experiment Tracker
+
+## Overview
+
+Breakdown of docs/prd/experiment-tracker.md into four tasks across two phases.
+
+## Architecture Decisions
+
+- Signals are stored as append-only rows rather than a mutable field on the
+  experiment, so history survives and "latest signal" is a query, not a write.
+- The list view reads from the same query layer as the detail view, rather than
+  maintaining its own projection.
+
+## Phases
+
+### Phase 1: Foundation
+
+- [ ] Task 01: Storage and schema
+- [ ] Task 02: Experiment list view
+
+**Checkpoint:** an experiment can be stored and listed end to end.
+
+### Phase 2: Signals
+
+- [ ] Task 03: Signal capture
+- [ ] Task 04: Signal display in list
+
+**Final checkpoint:** every Success Criterion in the PRD is verified.
+
+## Risks and Mitigations
+
+| Risk | Impact | Mitigation |
+|---|---|---|
+| Signal volume grows unbounded | Med | Cap retention per experiment; revisit if the list query slows |
+| Empty-state copy unspecified in the PRD | Low | Chose explicit copy; recorded as an open question |
+
+## Open Questions
+
+- Should finished experiments be hidden by default or shown greyed out?
+  Blocks Task 02's empty-state behaviour.
+```
+
+**Phase 7 table shown to the user:**
+
+```markdown
+| # | Task | Size | Blocked by | Category | What it delivers |
+|---|---|---|---|---|---|
+| 01 | Storage and schema | M | — | sequential | Experiments can be stored and read |
+| 02 | Experiment list view | M | 01 | parallel | A user can see all running experiments |
+| 03 | Signal capture | M | 01 | parallel | A user can record a signal |
+| 04 | Signal display in list | S | 02, 03 | needs coordination | The list shows each experiment's latest signal |
 ```
 
 Only after the user approves this table do the task files get written.
@@ -533,7 +751,7 @@ Only after the user approves this table do the task files get written.
 
 - **`get-prd`**: upstream and the normal source. Its output at `docs/prd/<name>.md` is this skill's default input.
 - **`spec-driven-development`**: upstream alternative. Its spec satisfies the same role; `get-tasks` reads whichever exists.
-- **`planning-and-task-breakdown`**: overlapping by design. It serves the older spec-to-plan flow and writes `tasks/plan.md` and `tasks/todo.md`. Both may coexist; choose per project, not per task. Where their guidance diverges, this skill's task-file format is authoritative for `tasks/<name>/` output.
+- **`planning-and-task-breakdown`**: the narrower predecessor. It serves the older spec-to-plan flow and writes `tasks/plan.md` and `tasks/todo.md` without per-task files, rollback, parallelization classification, or plan-document risks. `get-tasks` is the superset: reach for it whenever the work came from a PRD and needs tracked, per-task artifacts. Keep using `planning-and-task-breakdown` only for lightweight plans where a task list is enough and no per-task file is wanted.
 - **`incremental-implementation`**: downstream and the default handoff. It executes one task at a time.
 - **`test-driven-development`**: downstream, conditional on the PRD's Testing Strategy.
 - **`context-engineering`**: alongside. Before starting a large task, load only the PRD sections and source files that task needs rather than the entire PRD.
