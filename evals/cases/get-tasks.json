@@ -1,0 +1,52 @@
+{
+  "skill_name": "get-tasks",
+  "trigger": {
+    "positive": [
+      {
+        "prompt": "Breakdown PRD di docs/prd/billing.md jadi task yang bisa dieksekusi",
+        "top_k": 3
+      },
+      {
+        "prompt": "Get tasks from the approved PRD",
+        "top_k": 3
+      },
+      {
+        "prompt": "Pecah PRD ini jadi task kecil dengan dependency dan acceptance criteria",
+        "top_k": 3
+      },
+      {
+        "prompt": "Bikin task list rinci per file dari spec yang sudah disetujui",
+        "top_k": 3
+      }
+    ],
+    "negative": [
+      {
+        "prompt": "Bikin PRD untuk sistem baru lewat interview mendalam",
+        "owner": "get-prd"
+      },
+      {
+        "prompt": "Write a spec for the billing feature before we code",
+        "owner": "spec-driven-development"
+      },
+      {
+        "prompt": "Run the failing checkout test and find the root cause",
+        "owner": "debugging-and-error-recovery"
+      }
+    ]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "kind": "dialogue",
+      "prompt": "The PRD at docs/prd/inventory.md is approved. Break it into executable tasks.",
+      "expected_output": "A dependency graph, vertical slices, one task file per task with acceptance criteria and verification, checkpoints, and user approval of the breakdown table before files are written",
+      "expectations": [
+        "A dependency graph or explicit blocking edges are produced before any task is written",
+        "Tasks are vertical slices rather than horizontal layers",
+        "Each task carries acceptance criteria, a verification block, and a rollback note",
+        "One file per task is written under a tasks/ directory, numbered from 01",
+        "The user approves the breakdown table before task files are written"
+      ]
+    }
+  ]
+}
