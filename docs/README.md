@@ -29,7 +29,7 @@ DEFINE -> PLAN -> BUILD -> VERIFY -> REVIEW -> SHIP
 | Phase | Skills |
 |---|---|
 | DEFINE | `idea-refine`, `interview-me`, `spec-driven-development`, `constraint-driven-development` |
-| PLAN | `get-tasks`, `planning-and-task-breakdown` |
+| PLAN | `get-schema`, `get-tasks`, `planning-and-task-breakdown` |
 | BUILD | `incremental-implementation`, `test-driven-development`, `context-engineering`, `source-driven-development`, `doubt-driven-development`, `frontend-ui-engineering`, `api-and-interface-design` |
 | VERIFY | `browser-testing-with-devtools`, `debugging-and-error-recovery` |
 | REVIEW | `code-review-and-quality`, `code-simplification`, `security-and-hardening`, `performance-optimization` |

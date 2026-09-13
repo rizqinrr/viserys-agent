@@ -15,6 +15,10 @@
         "top_k": 3
       },
       {
+        "prompt": "Turn the PRD into an ordered task list we can execute",
+        "top_k": 3
+      },
+      {
         "prompt": "Bikin task list rinci per file dari spec yang sudah disetujui",
         "top_k": 3
       }

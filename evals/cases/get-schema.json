@@ -1,0 +1,56 @@
+{
+  "skill_name": "get-schema",
+  "trigger": {
+    "positive": [
+      {
+        "prompt": "Bikin schema database dari PRD di docs/prd/experiment-tracker.md",
+        "top_k": 3
+      },
+      {
+        "prompt": "Get schema for the billing tables before we start coding",
+        "top_k": 3
+      },
+      {
+        "prompt": "Rancang struktur tabel dan relasinya dari PRD ini",
+        "top_k": 3
+      },
+      {
+        "prompt": "Desain tabel database dengan kolom dan index untuk fitur ini",
+        "top_k": 3
+      }
+    ],
+    "negative": [
+      {
+        "prompt": "Bikin PRD untuk sistem baru lewat interview mendalam",
+        "owner": "get-prd"
+      },
+      {
+        "prompt": "Breakdown PRD jadi task yang bisa dieksekusi",
+        "owner": "get-tasks"
+      },
+      {
+        "prompt": "Design the REST endpoint contract and error responses",
+        "owner": "api-and-interface-design"
+      },
+      {
+        "prompt": "Record an architecture decision about why we chose Postgres",
+        "owner": "documentation-and-adrs"
+      }
+    ]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "kind": "dialogue",
+      "prompt": "The PRD at docs/prd/inventory.md is approved. Design the database schema for it.",
+      "expected_output": "An entity list derived from PRD user stories, an engine recommendation with reasoning, and a schema document with columns, relationships, indexes, constraints, and migration notes",
+      "expectations": [
+        "Entities are derived from PRD user stories or objectives rather than invented",
+        "The database engine is proposed with a recommendation and a reason, or explicitly inherited from the PRD",
+        "Every foreign key declares cardinality and on-delete behaviour",
+        "Every index names the query it serves",
+        "The user approves the model before the schema document is written"
+      ]
+    }
+  ]
+}

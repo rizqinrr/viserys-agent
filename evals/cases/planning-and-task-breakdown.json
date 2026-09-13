@@ -7,11 +7,11 @@
         "top_k": 3
       },
       {
-        "prompt": "Turn the PRD into an ordered task list we can execute",
+        "prompt": "Plan the work into implementable chunks before we start coding",
         "top_k": 3
       },
       {
-        "prompt": "Plan the work into implementable chunks before we start coding",
+        "prompt": "Break down the implementation plan from the approved specification",
         "top_k": 3
       }
     ],
