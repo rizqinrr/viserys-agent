@@ -31,7 +31,7 @@ If the global agent already exists, say so and confirm it is active. Do not offe
 - Version: `0.1.0`
 - Plain Markdown plus a small set of validator scripts
 - No runtime dependency, no network dependency
-- 25 skills, 4 personas, 7 shared checklists
+- 26 skills, 4 personas, 7 shared checklists
 
 The pack does not generate code by itself. It gives agents a process. Your job when working here is to keep that process intact and consistent.
 
@@ -41,7 +41,7 @@ The pack does not generate code by itself. It gives agents a process. Your job w
 
 | Path | Purpose |
 |---|---|
-| `skills/` | 25 `SKILL.md` workflows, plus per-skill `references/` and `scripts/` where needed |
+| `skills/` | 26 `SKILL.md` workflows, plus per-skill `references/` and `scripts/` where needed |
 | `agents/` | 4 reviewer personas (not active in OpenCode — see section 7) |
 | `references/` | 7 shared checklists pulled in by skills on demand |
 | `.claude/commands/` | 9 slash commands (Claude Code adapter) |
@@ -71,6 +71,7 @@ DEFINE -> PLAN -> BUILD -> VERIFY -> REVIEW -> SHIP
 
 | Skill | Use when |
 |---|---|
+| `get-prd` | Starting a new application, system, or feature and no requirements document exists yet. Deep interview plus PRD authoring in one pass |
 | `idea-refine` | A concept is still vague and needs structured exploration |
 | `interview-me` | The ask is underspecified and requirements must be extracted one question at a time |
 | `spec-driven-development` | Starting a project, feature, or significant change with no spec yet |

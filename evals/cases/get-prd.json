@@ -1,0 +1,52 @@
+{
+  "skill_name": "get-prd",
+  "trigger": {
+    "positive": [
+      {
+        "prompt": "Bikin PRD untuk sistem baru sebelum kita mulai coding",
+        "top_k": 3
+      },
+      {
+        "prompt": "Get prd for the app I want to build",
+        "top_k": 3
+      },
+      {
+        "prompt": "Grill me about what I want and turn it into a PRD",
+        "top_k": 3
+      },
+      {
+        "prompt": "Mau develop sistem baru, bantu susun requirement documentnya dulu",
+        "top_k": 3
+      }
+    ],
+    "negative": [
+      {
+        "prompt": "Write a spec for the API contract only",
+        "owner": "spec-driven-development"
+      },
+      {
+        "prompt": "Ask me one question at a time about my preference, no document needed",
+        "owner": "interview-me"
+      },
+      {
+        "prompt": "Run the full test suite and report failures",
+        "owner": "test-driven-development"
+      }
+    ]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "kind": "dialogue",
+      "prompt": "I want to build an inventory management system for my small shop. Get prd.",
+      "expected_output": "A multi-round design-tree interview with confidence tracking, a gap check against the nine PRD areas, and an approved PRD",
+      "expectations": [
+        "A hypothesis with a confidence number is stated before the first question",
+        "Questions are asked in rounds, each numbered with a recommendation attached",
+        "The agent does not move to PRD authoring before the user confirms a restate of intent",
+        "The PRD template is filled or explicitly marked Not applicable section by section",
+        "An explicit yes is requested before the PRD is saved"
+      ]
+    }
+  ]
+}

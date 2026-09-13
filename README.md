@@ -22,7 +22,7 @@ DEFINE -> PLAN -> BUILD -> VERIFY -> REVIEW -> SHIP
 
 | Path | Contents |
 |---|---|
-| `skills/` | 25 `SKILL.md` workflows with steps, exit criteria, and anti-rationalization tables |
+| `skills/` | 26 `SKILL.md` workflows with steps, exit criteria, and anti-rationalization tables |
 | `agents/` | 4 reviewer personas |
 | `references/` | Shared checklists loaded on demand |
 | `commands/` | Lifecycle command definitions |
@@ -112,7 +112,7 @@ To activate it:
 2. Open the repository folder with OpenCode.
 3. Press `Tab` and select `viserys`.
 
-The `viserys` agent runs in primary mode, so it appears in the agent list. Its prompt routes every request through the lifecycle skills and enforces the check-for-a-skill-first rule. The skill paths are registered by `.opencode/opencode.json`, so the pack's 25 skills load without any global configuration.
+The `viserys` agent runs in primary mode, so it appears in the agent list. Its prompt routes every request through the lifecycle skills and enforces the check-for-a-skill-first rule. The skill paths are registered by `.opencode/opencode.json`, so the pack's 26 skills load without any global configuration.
 
 ## Usage
 
