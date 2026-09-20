@@ -1,0 +1,59 @@
+{
+  "skill_name": "get-design",
+  "trigger": {
+    "positive": [
+      {
+        "prompt": "Bikin UI dashboard ini supaya tidak kelihatan AI slop",
+        "top_k": 1
+      },
+      {
+        "prompt": "Get design for a product-specific landing page, not a generic AI template",
+        "top_k": 1
+      },
+      {
+        "prompt": "Critique this pricing page's visual hierarchy, typography, and generic card layout",
+        "top_k": 1
+      },
+      {
+        "prompt": "Redesign this checkout with a distinct visual direction before coding",
+        "top_k": 1
+      },
+      {
+        "prompt": "Audit this interface for AI aesthetic patterns, layout, color, motion, and design-system drift",
+        "top_k": 1
+      }
+    ],
+    "negative": [
+      {
+        "prompt": "Build an accessible dropdown component using the existing approved design system",
+        "owner": "frontend-ui-engineering"
+      },
+      {
+        "prompt": "Measure and optimize the slow database query",
+        "owner": "performance-optimization"
+      },
+      {
+        "prompt": "Debug why this API endpoint returns 500",
+        "owner": "debugging-and-error-recovery"
+      }
+    ]
+  },
+  "evals": [
+    {
+      "id": 1,
+      "kind": "execution",
+      "prompt": "The dashboard in README.md feels like generic AI slop. Use get-design shape to produce a concrete redesign direction without changing the fixture.",
+      "expected_output": "A product-specific redesign direction grounded in audience, task, content hierarchy, and the complete anti-slop rulebook",
+      "files": [
+        "get-design"
+      ],
+      "expectations": [
+        "The response identifies the primary user task and distinguishes product-specific structure from category-template defaults",
+        "The direction accounts for typography, color, layout, motion, copy, imagery, states, accessibility, and responsive concerns rather than only gradients and cards",
+        "Intentional choices are treated as contextual rather than universally banned",
+        "The proposed direction includes THESIS, OWN-WORLD, STORY, FIRST VIEWPORT, FORM, and FINISH evidence",
+        "No fixture file is modified because shape stops before implementation"
+      ]
+    }
+  ]
+}

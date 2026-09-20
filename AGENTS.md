@@ -31,7 +31,7 @@ If the global agent already exists, say so and confirm it is active. Do not offe
 - Version: `0.1.0`
 - Plain Markdown plus a small set of validator scripts
 - No runtime dependency, no network dependency
-- 28 skills, 4 personas, 7 shared checklists
+- 29 skills, 4 personas, 7 shared checklists
 
 The pack does not generate code by itself. It gives agents a process. Your job when working here is to keep that process intact and consistent.
 
@@ -41,15 +41,15 @@ The pack does not generate code by itself. It gives agents a process. Your job w
 
 | Path | Purpose |
 |---|---|
-| `skills/` | 28 `SKILL.md` workflows, plus per-skill `references/` and `scripts/` where needed |
+| `skills/` | 29 `SKILL.md` workflows, plus per-skill `references/` and `scripts/` where needed |
 | `agents/` | 4 reviewer personas (not active in OpenCode — see section 7) |
 | `references/` | 7 shared checklists pulled in by skills on demand |
-| `.claude/commands/` | 9 slash commands (Claude Code adapter) |
-| `commands/` | 9 TOML commands (Antigravity adapter) |
-| `.gemini/commands/` | 9 TOML commands (Gemini CLI adapter) |
+| `.claude/commands/` | 13 slash commands (Claude Code adapter) |
+| `commands/` | 13 TOML commands (Antigravity adapter) |
+| `.gemini/commands/` | 13 TOML commands (Gemini CLI adapter) |
 | `.opencode/` | OpenCode adapter: the `viserys` primary agent and `skills.paths` registration |
 | `.claude-plugin/`, `.codex-plugin/`, `.agents/plugins/` | Plugin and marketplace manifests for other harnesses |
-| `evals/` | 25 eval cases and their fixtures |
+| `evals/` | 29 eval cases and their fixtures |
 | `scripts/` | 5 structural validators, the eval runner, and their test suites |
 | `hooks/` | Session lifecycle hooks (Claude Code) |
 | `docs/` | `README.md` (pack overview) and `skill-anatomy.md` (the `SKILL.md` spec) |
@@ -94,6 +94,7 @@ DEFINE -> PLAN -> BUILD -> VERIFY -> REVIEW -> SHIP
 | `context-engineering` | Setting up a session, switching tasks, or output quality drops |
 | `source-driven-development` | Correctness depends on current official documentation |
 | `doubt-driven-development` | Stakes are high and a confident answer is cheaper to verify now than to debug later |
+| `get-design` | Product-specific visual direction, anti-AI-slop review, and UI refinement |
 | `frontend-ui-engineering` | Building or modifying user-facing interfaces |
 | `api-and-interface-design` | Designing APIs, module boundaries, or public interfaces |
 

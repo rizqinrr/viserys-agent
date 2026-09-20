@@ -12,7 +12,7 @@
   "interface": {
     "displayName": "Viserys",
     "shortDescription": "Senior-engineer workflows for AI coding agents: spec, plan, build, test, review, ship.",
-    "longDescription": "Viserys bundles 25 engineering workflows covering requirements, planning, implementation, testing, review, and shipping.",
+    "longDescription": "Viserys bundles 29 engineering workflows covering requirements, planning, implementation, testing, review, and shipping.",
     "developerName": "rizqinrr",
     "category": "Productivity",
     "capabilities": [

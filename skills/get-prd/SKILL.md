@@ -281,7 +281,7 @@ Write the PRD using the template in the next section. Then:
    - "Sure, let's go." -> Often a polite exit, not an endorsement. Same follow-up.
    - Silence followed by "okay let's start." -> The user has given up, not converged. Stop and ask whether you missed something.
 3. **If corrected, fold it in and restate.** Loop until you get an explicit yes.
-4. **After approval, hand off.** Point the user at `planning-and-task-breakdown` to break the PRD into ordered tasks. Mention other skills likely to apply: `api-and-interface-design` if modules have boundaries, `frontend-ui-engineering` if there is UI, `security-and-hardening` if there is auth or user input.
+4. **After approval, hand off.** Point the user at `planning-and-task-breakdown` to break the PRD into ordered tasks. Mention other skills likely to apply: `api-and-interface-design` if modules have boundaries, `get-design` before frontend implementation when visual direction is unresolved, `frontend-ui-engineering` for UI implementation, and `security-and-hardening` if there is auth or user input.
 
 **Exit condition:** the PRD file exists at the agreed path and the user has given an explicit yes.
 
@@ -530,6 +530,7 @@ finished experiments remain visible with their result attached.
 - **`spec-driven-development`**: overlapping by design. This skill produces a PRD that satisfies the same purpose. Both may coexist; choose per task, not per section.
 - **`idea-refine`**: upstream alternative. If the user has several candidate directions and has not chosen one, `idea-refine` explores the space first. Once a direction is chosen, `get-prd` takes over.
 - **`api-and-interface-design`**: downstream, conditional. Invoke when the PRD's Technical Decisions section defines module boundaries or external contracts.
-- **`frontend-ui-engineering`**: downstream, conditional. Invoke when the PRD includes user-facing interface work.
+- **`get-design`**: downstream, conditional, before UI implementation when visual direction, hierarchy, or anti-AI-slop quality is unresolved.
+- **`frontend-ui-engineering`**: downstream, conditional. Invoke when the PRD includes user-facing interface implementation after visual direction is settled.
 - **`security-and-hardening`**: downstream, conditional. Invoke when the PRD includes authentication, user input, or third-party integration.
 - **`constraint-driven-development`**: adjacent. `get-prd` owns product requirements; `constraint-driven-development` owns the standing quality bar (formatters, lint rules, test gates) that applies across all work.

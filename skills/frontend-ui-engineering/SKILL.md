@@ -1,6 +1,6 @@
 ---
 name: frontend-ui-engineering
-description: Builds production-quality, accessible, responsive user-facing UIs. Use when building or modifying interfaces and pages, creating components, implementing layouts, meeting WCAG accessibility requirements, managing state, or when the output needs to look and feel production-quality rather than AI-generated.
+description: Builds production-quality, accessible, responsive user-facing UI components from an existing approved design system. Use when implementing or modifying interfaces and pages, building accessible dropdowns, modals, forms, and components, managing UI state, adding keyboard behavior, meeting WCAG requirements, or implementing responsive layouts after visual direction is settled.
 ---
 
 # Frontend UI Engineering
@@ -16,6 +16,8 @@ Build production-quality user interfaces that are accessible, performant, and vi
 - Implementing responsive layouts
 - Adding interactivity or state management
 - Fixing visual or UX issues
+
+**When NOT to use:** Use `get-design` first when the visual direction, hierarchy, palette, typography, imagery, motion, or anti-AI-slop strategy is unresolved. Use this skill once the design direction is established or when the task is primarily implementation architecture, state, accessibility, and responsive behavior.
 
 ## Component Architecture
 
@@ -114,6 +116,8 @@ Global store (Zustand, Redux)    → Complex client state shared app-wide
 **Avoid prop drilling deeper than 3 levels.** If you're passing props through components that don't use them, introduce context or restructure the component tree.
 
 ## Design System Adherence
+
+For new surfaces, redesigns, or interfaces that feel generic, invoke `get-design` before implementation. Its visual direction and anti-slop rulebook govern composition, typography, color, imagery, motion, and product specificity; this section enforces those decisions in production code.
 
 ### Avoid the AI Aesthetic
 

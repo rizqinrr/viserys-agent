@@ -39,6 +39,14 @@ function writeTomlCommand(root, directory, stem, descriptionLine) {
   writeFile(root, path.join(directory, `${stem}.toml`), `${descriptionLine}\nprompt = "Run command"\n`);
 }
 
+function writeOpenCodeCommand(root, stem, descriptionLine) {
+  writeFile(
+    root,
+    path.join('.opencode', 'command', `${stem}.md`),
+    `---\n${descriptionLine}\n---\n\n# Command\n`,
+  );
+}
+
 function writeMatchingCommands(root, stem, description) {
   writeClaudeCommand(root, stem, `description: ${description}`);
   writeTomlCommand(root, path.join('.gemini', 'commands'), stem, `description = "${description}"`);
@@ -125,6 +133,39 @@ test('fails with an actionable error for a malformed description', () => {
   assert.equal(result.status, 1, result.stdout + result.stderr);
   assert.match(result.stdout, /\.gemini\/commands\/review — missing or malformed description/);
   assert.match(result.stdout, /1 commands checked — 1 error\(s\) — FAILED/);
+});
+
+test('accepts an optional OpenCode adapter with matching description', () => {
+  const root = makeSandbox();
+  const description = 'Design product-specific interfaces';
+  writeMatchingCommands(root, 'get-design', description);
+  writeOpenCodeCommand(root, 'get-design', `description: ${description}`);
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /✓  get-design/);
+});
+
+test('fails when an OpenCode adapter has no Claude twin', () => {
+  const root = makeSandbox();
+  writeOpenCodeCommand(root, 'get-design', 'description: Design product-specific interfaces');
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /get-design — present in \.opencode\/command but missing in \.claude\/commands/);
+});
+
+test('fails when an OpenCode adapter description drifts', () => {
+  const root = makeSandbox();
+  writeMatchingCommands(root, 'get-design', 'Design product-specific interfaces');
+  writeOpenCodeCommand(root, 'get-design', 'description: Audit generic interfaces');
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /\.opencode:\s+Audit generic interfaces/);
 });
 
 test('parses escaped quotes in double-quoted TOML descriptions', () => {

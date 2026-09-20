@@ -4,8 +4,8 @@
  *
  * Guards against silent drift across the three slash-command directories:
  *   .claude/commands/  (.md — Claude Code)
- *   .gemini/commands/  (.toml — Gemini CLI)
- *   commands/          (.toml — Antigravity CLI)
+ *   .gemini/commands/ (.toml — Gemini CLI)
+ *   commands/         (.toml — Antigravity CLI)
  *
  * Checks (errors block CI):
  *   - Every command present in one directory exists in all three
@@ -28,9 +28,10 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 
 const DIRS = {
-  claude:     { dir: path.join(ROOT, '.claude', 'commands'), ext: '.md'   },
-  gemini:     { dir: path.join(ROOT, '.gemini', 'commands'), ext: '.toml' },
-  antigravity:{ dir: path.join(ROOT, 'commands'),            ext: '.toml' },
+  claude:      { dir: path.join(ROOT, '.claude', 'commands'),  ext: '.md'   },
+  gemini:      { dir: path.join(ROOT, '.gemini', 'commands'),  ext: '.toml' },
+  antigravity: { dir: path.join(ROOT, 'commands'),             ext: '.toml' },
+  opencode:    { dir: path.join(ROOT, '.opencode', 'command'), ext: '.md', optional: true },
 };
 
 // Commands where the file stem differs between Claude and the TOML dirs.
@@ -94,6 +95,7 @@ function main() {
     claude:      loadCommands(DIRS.claude),
     gemini:      loadCommands(DIRS.gemini),
     antigravity: loadCommands(DIRS.antigravity),
+    opencode:    loadCommands(DIRS.opencode),
   };
 
   // Canonical command list: use Claude stems as the reference.
@@ -106,6 +108,7 @@ function main() {
   const allCanonicalStems = new Set([
     ...claudeStems,
     ...[...allTomlStems].map(s => NAME_MAP_REVERSE[s] ?? s),
+    ...Object.keys(byTool.opencode),
   ]);
 
   let errors = 0;
@@ -127,7 +130,16 @@ function main() {
     }
   }
 
-  // Commands in TOML dirs not found in Claude
+  // OpenCode adapters are optional, but any present command must have a Claude twin.
+  if (Object.keys(byTool.opencode).length > 0) {
+    for (const stem of Object.keys(byTool.opencode).sort()) {
+      if (!(stem in byTool.claude)) {
+        console.log(`  ✗  ${stem} — present in .opencode/command but missing in .claude/commands`);
+        errors++;
+      }
+    }
+  }
+
   for (const stem of [...allTomlStems].sort()) {
     const claudeStem = NAME_MAP_REVERSE[stem] ?? stem;
     if (!(claudeStem in byTool.claude)) {
@@ -143,12 +155,14 @@ function main() {
     const tomlStem   = NAME_MAP[claudeStem] ?? claudeStem;
     const descClaude = byTool.claude[claudeStem];
     const descGemini = byTool.gemini[tomlStem];
-    const descAgy    = byTool.antigravity[tomlStem];
+    const descAgy      = byTool.antigravity[tomlStem];
+    const descOpenCode = byTool.opencode[claudeStem];
 
     const malformed = [
       ['.claude/commands', byTool.claude, claudeStem],
       ['.gemini/commands', byTool.gemini, tomlStem],
       ['commands/', byTool.antigravity, tomlStem],
+      ['.opencode/command', byTool.opencode, claudeStem],
     ].filter(([, commands, stem]) => Object.prototype.hasOwnProperty.call(commands, stem) && commands[stem] == null);
 
     if (malformed.length) {
@@ -166,14 +180,18 @@ function main() {
     }
 
     const allMatch = descClaude === descGemini && descGemini === descAgy;
+    const openCodeMatches = descOpenCode == null || descOpenCode === descClaude;
 
-    if (allMatch) {
+    if (allMatch && openCodeMatches) {
       console.log(`  ✓  ${claudeStem}`);
     } else {
       console.log(`  ✗  ${claudeStem}`);
       console.log(`       .claude:      ${descClaude}`);
       console.log(`       .gemini:      ${descGemini}`);
       console.log(`       commands/:    ${descAgy}`);
+      if (descOpenCode != null && descOpenCode !== descClaude) {
+        console.log(`       .opencode:    ${descOpenCode}`);
+      }
       errors++;
     }
   }

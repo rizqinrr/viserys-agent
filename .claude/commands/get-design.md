@@ -1,0 +1,24 @@
+---
+description: Design, critique, audit, or refine product-specific UI without generic AI aesthetics
+---
+
+Invoke the viserys:get-design skill.
+
+Interpret the first word of `$ARGUMENTS` as the mode and the remainder as the target or request.
+
+Supported modes:
+
+- `new` — create or replace a surface and visual direction, then build when requested
+- `shape` — decide UX, composition, and visual direction before code
+- `critique` — review design specificity, hierarchy, usability, cognitive load, and emotional fit without editing
+- `audit` — review accessibility, performance, theming, responsive behavior, and implementation integrity without editing
+- `polish` — finish an existing UI while preserving its identity
+- `layout`, `typeset`, `colorize`, `animate`, `bolder`, `quieter`, `distill`, `clarify`, `adapt`, `harden`, `onboard`, `optimize`, `delight`, `overdrive` — focused refinement
+- `document` — capture the current design system in DESIGN.md
+- `extract` — consolidate repeated semantic patterns into tokens and shared components
+
+If no mode is supplied, inspect available context and present 2–3 recommended modes plus the compact mode list. Do not auto-run one.
+
+For every mode, load `skills/get-design/references/anti-ai-slop-catalog.md`. Load `skills/get-design/references/routing.md`, `skills/get-design/references/critique.md`, `skills/get-design/references/audit.md`, or `skills/get-design/references/focused-playbooks.md` only when that branch needs it. Combine with `frontend-ui-engineering` for implementation and `browser-testing-with-devtools` for runtime verification.
+
+Request: $ARGUMENTS
