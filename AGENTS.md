@@ -8,13 +8,12 @@ Guidance for AI coding agents working in the `viserys` repository.
 
 When the user mentions Viserys, asks how to activate it, or asks whether it works in another project, do NOT assume. Follow these steps:
 
-1. **Check the global scope.** Look for an agent file at any of:
-   - `~/.config/opencode/agent/viserys.md`
+1. **Check the global scope.** Look for an agent file at:
    - `~/.config/opencode/agents/viserys.md`
 
 2. **If it does not exist**, explain that there are two ways to use Viserys, then **ask the user which they want**:
    - **Project scope** — already active automatically. In this repository, press `Tab` and select `viserys`. Nothing to install.
-   - **Global scope** — copy `.opencode/agent/viserys.md` into `~/.config/opencode/agent/`, and register `skills.paths` in the user's global config. This activates Viserys in every project the user opens.
+   - **Global scope** — copy `.opencode/agents/viserys.md` into `~/.config/opencode/agents/`, and register `skills.paths` in the user's global config. This activates Viserys in every project the user opens.
 
 3. **If the user chooses global scope**, print the exact commands for them to run. Do **not** modify the user's global configuration yourself unless they explicitly ask you to.
 
@@ -30,8 +29,8 @@ If the global agent already exists, say so and confirm it is active. Do not offe
 
 - Version: `0.1.0`
 - Plain Markdown plus a small set of validator scripts
-- No runtime dependency, no network dependency
-- 29 skills, 4 personas, 7 shared checklists
+- Core skills have no runtime or network dependency; adapters, hooks, browser tooling, and installation flows may have prerequisites
+- 29 skills, 7 personas, 7 shared checklists
 
 The pack does not generate code by itself. It gives agents a process. Your job when working here is to keep that process intact and consistent.
 
@@ -42,17 +41,17 @@ The pack does not generate code by itself. It gives agents a process. Your job w
 | Path | Purpose |
 |---|---|
 | `skills/` | 29 `SKILL.md` workflows, plus per-skill `references/` and `scripts/` where needed |
-| `agents/` | 4 reviewer personas (not active in OpenCode — see section 7) |
+| `agents/` | 7 specialist personas (not active in OpenCode — see section 7) |
 | `references/` | 7 shared checklists pulled in by skills on demand |
 | `.claude/commands/` | 13 slash commands (Claude Code adapter) |
 | `commands/` | 13 TOML commands (Antigravity adapter) |
 | `.gemini/commands/` | 13 TOML commands (Gemini CLI adapter) |
-| `.opencode/` | OpenCode adapter: the `viserys` primary agent and `skills.paths` registration |
+| `.opencode/` + `opencode.json` | OpenCode primary agent/command adapters plus root project config for instructions and `skills.paths` |
 | `.claude-plugin/`, `.codex-plugin/`, `.agents/plugins/` | Plugin and marketplace manifests for other harnesses |
 | `evals/` | 29 eval cases and their fixtures |
-| `scripts/` | 5 structural validators, the eval runner, and their test suites |
+| `scripts/` | 6 structural validators, the eval runner, and their test suites |
 | `hooks/` | Session lifecycle hooks (Claude Code) |
-| `docs/` | `README.md` (pack overview) and `skill-anatomy.md` (the `SKILL.md` spec) |
+| `docs/` | Installation, commands, workflows, skills, personas, hooks, and skill-authoring documentation |
 | `tasks/` | Internal working documents, not tracked in git |
 
 `plugin.json` at the root is the generic plugin manifest. The harness-specific manifests live inside their adapter directories.
@@ -155,8 +154,8 @@ The full specification lives in `docs/skill-anatomy.md`. Read it before writing 
 2. Create `skills/<name>/SKILL.md` with the frontmatter and the required sections.
 3. Add `evals/cases/<name>.json` with at least 3 positive triggers, 2 negative triggers, and 1 behavioral eval.
 4. If the eval `kind` is `execution`, add its fixture under `evals/fixtures/<name>/`.
-5. Update the skill list in `README.md` and `docs/README.md`.
-6. Run `node scripts/validate-skills.js` and `node scripts/run-evals.js`.
+5. Update the phase/count summary in `README.md` when needed and the canonical catalog in `docs/skills.md`.
+6. Run `node scripts/validate-skills.js` and `node scripts/run-evals.js --min-rank1 95`.
 
 Missing case files, incomplete case counts, unknown `kind` values, invalid fixture paths, and absent required fixtures are validation errors, not warnings.
 
@@ -169,17 +168,20 @@ Run these before declaring any change complete:
 ```bash
 node scripts/validate-skills.js
 node scripts/validate-commands.js
+node scripts/validate-personas.js
 node scripts/validate-artifact-paths.js
 node scripts/validate-reference-links.js
 node scripts/validate-versions.js
-node scripts/run-evals.js
+node scripts/run-evals.js --min-rank1 95
+node --test scripts/*-test.js scripts/lib/*-test.js
 ```
 
 Notes:
 
 - `validate-versions.js` reads `git describe --tags --abbrev=0` and compares it to the `version` field in every manifest. Tags must have **no** `v` prefix (use `0.1.0`, not `v0.1.0`).
 - `run-evals.js` is the free, deterministic Tier-2 check. `--behavioral` spends tokens and runs only on request.
-- Every validator has a matching `*-test.js` suite under `scripts/`.
+- Structural validators are covered by regression suites under `scripts/` and `scripts/lib/`; `validate-skills.js` uses `scripts/lib/skill-lint-test.js`.
+- The canonical local/CI validation matrix lives in `CONTRIBUTING.md#validasi`.
 
 ---
 
@@ -193,7 +195,7 @@ Notes:
 
 ### Note on personas
 
-The four files in `agents/` (`code-reviewer`, `test-engineer`, `security-auditor`, `web-performance-auditor`) are **not active** in OpenCode. OpenCode discovers agents under `.opencode/agent/`, not `agents/`, and these files also lack an explicit `mode: subagent` field. They are Markdown reviewer prompts, usable by copying them into a supported location. Do not assume they can be invoked as subagents.
+The seven files in `agents/` (`maester`, `kingsguard`, `prover`, `racer`, `strategist`, `artisan`, `chronicler`) are **not active** in OpenCode. OpenCode discovers project agents under `.opencode/agents/`, not root `agents/`, and these files also lack an explicit `mode: subagent` field. They are Markdown persona prompts, usable by copying them into a supported location. Do not assume they can be invoked as subagents.
 
 ### Note on `tasks/`
 

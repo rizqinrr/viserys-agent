@@ -8,7 +8,7 @@ paths:
 
 This repo already covers most of the development lifecycle, so most new-skill ideas overlap an existing skill or an open PR. Before creating a new `skills/<name>/` directory or significantly reworking an existing one:
 
-- Run the pre-flight checks in [CONTRIBUTING.md](../../CONTRIBUTING.md#before-proposing-a-new-skill): search the catalog, check open PRs (`gh pr list --state open`), and justify the gap.
+- Run the pre-flight checks in [CONTRIBUTING.md](../../CONTRIBUTING.md#sebelum-proposing-skill-baru): search the catalog, check open PRs (`gh pr list --state open`), and justify the gap.
 - Prefer extending an existing skill over adding a near-duplicate. If the idea overlaps an existing skill, edit that skill instead of adding a new directory.
 - Keep the `SKILL.md` within [docs/skill-anatomy.md](../../docs/skill-anatomy.md), and never duplicate content between skills, reference the other skill instead.
 

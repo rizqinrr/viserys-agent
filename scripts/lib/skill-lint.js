@@ -43,11 +43,12 @@ const DESCRIPTION_TRIGGER_NEGATE = /\b(do not|don't|never) use (this )?(when|bef
 // Each entry is an array of acceptable heading strings — the first
 // match wins, so you can list canonical + legacy aliases.
 const REQUIRED_SECTIONS = [
-  ['## Overview'],
-  ['## When to Use'],
-  ['## Common Rationalizations'],
-  ['## Red Flags'],
-  ['## Verification'],
+  { label: '# Title', pattern: /^# (?!#)\S.+$/m },
+  { label: '## Overview', pattern: /^## Overview\s*$/m },
+  { label: '## When to Use', pattern: /^## When to Use\s*$/m },
+  { label: '## Common Rationalizations', pattern: /^## Common Rationalizations\s*$/m },
+  { label: '## Red Flags', pattern: /^## Red Flags\s*$/m },
+  { label: '## Verification', pattern: /^## Verification\s*$/m },
 ];
 
 // Skills that are intentionally exempt from section checks.
@@ -198,13 +199,20 @@ function lintSkillContent(dirName, content, knownSkills) {
     // satisfy the check, and match headings at the start of a line so
     // `### Verification` inside a block doesn't satisfy `## Verification`.
     const proseContent = stripFencedCodeBlocks(content);
-    for (const aliases of REQUIRED_SECTIONS) {
-      const found = aliases.some(heading => {
-        const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        return new RegExp(`^${escaped}\\s*$`, 'm').test(proseContent);
-      });
-      if (!found) {
-        errors.push(`Missing required section: ${aliases[0]}`);
+    const positions = [];
+    for (const section of REQUIRED_SECTIONS) {
+      const match = section.pattern.exec(proseContent);
+      if (!match) {
+        errors.push(`Missing required section: ${section.label}`);
+      } else {
+        positions.push({ label: section.label, index: match.index });
+      }
+    }
+    const processMatch = proseContent.match(/^## The .+\s*$/m);
+    if (processMatch) positions.splice(3, 0, { label: '## The <Process>', index: processMatch.index });
+    for (let i = 1; i < positions.length; i++) {
+      if (positions[i].index < positions[i - 1].index) {
+        errors.push(`Required section out of order: ${positions[i].label} must follow ${positions[i - 1].label}`);
       }
     }
   }

@@ -10,104 +10,95 @@
 
 # Viserys
 
-Engineering workflow pack untuk AI coding agents. Viserys membantu agent bekerja dengan alur yang konsisten:
+Engineering workflow pack untuk AI coding agents. Viserys memberi agent proses yang konsisten untuk mendefinisikan masalah, merencanakan pekerjaan, mengimplementasikan perubahan, memverifikasi hasil, melakukan review, dan menyiapkan release.
 
 ```text
 DEFINE → PLAN → BUILD → VERIFY → REVIEW → SHIP
 ```
 
-Viserys berisi 29 skills Markdown, reviewer personas, slash commands, shared checklists, dan validator. Core skills bersifat Markdown-only; adapter harness, hooks, browser tooling, dan behavioral evals punya kebutuhan tambahan masing-masing.
+Core Viserys terdiri dari Markdown dan validator Node.js, tanpa runtime aplikasi atau network dependency. Adapter harness, plugin installation, hooks, browser tooling, dan behavioral evals memiliki prerequisite masing-masing.
+
+## Isi repository
+
+- **29 skills** — workflow engineering dari requirements sampai shipping.
+- **7 specialist personas** — planning, review, security, testing, performance, UI, dan dokumentasi.
+- **13 command contracts** — tersedia untuk Claude Code, Gemini CLI, dan Antigravity.
+- **7 shared checklists** — definition of done, security, testing, performance, dan orchestration.
+- **Structural validators dan evals** — menjaga skill, command, persona, artifact path, reference, version, dan routing tetap konsisten.
+- **Optional hooks** — automatic context injection untuk lifecycle yang mendukungnya.
 
 ## Quick start
 
-Pilih harness yang kamu gunakan:
-
-| Harness | Status | Mulai dari |
+| Harness | Mulai dari | Status |
 |---|---|---|
-| **OpenCode** | Project adapter lengkap; global setup manual | [OpenCode setup](docs/installation.md#opencode) |
-| **Claude Code** | Plugin marketplace dan commands teruji di CI | [Claude Code setup](docs/installation.md#claude-code) |
-| **OMP** | Skills/agents/commands kompatibel lewat folder user atau project | [OMP setup](docs/installation.md#omp) |
-| **Codex** | Skills melalui plugin manifest | [Codex setup](docs/installation.md#codex) |
+| **OpenCode** | Buka repository, tekan `Tab`, pilih `viserys` | Project adapter tersedia; root personas tidak otomatis aktif |
+| **Claude Code** | Install plugin dari checkout lokal | Plugin flow paling lengkap dan diuji di CI |
+| **Gemini CLI** | Gunakan adapter di `.gemini/commands/` | 13 commands tersedia dan structurally tested; runtime E2E belum diverifikasi |
+| **Antigravity** | Gunakan adapter di `commands/` | 13 commands tersedia dan structurally tested; runtime E2E belum diverifikasi |
+| **OMP** | Copy/link skills, agents, dan prompts ke scope OMP | Native compatibility melalui struktur OMP |
+| **Codex** | Gunakan manifest `.codex-plugin/plugin.json` | Skills-only pada level manifest |
 
-Untuk OpenCode project scope:
+Panduan setup dan batas dukungan: [`docs/installation.md`](docs/installation.md).
+
+### OpenCode project scope
 
 ```text
-1. Buka repository ini dari OpenCode.
+1. Buka root repository ini dari OpenCode.
 2. Tekan Tab.
 3. Pilih agent viserys.
 ```
 
-Untuk Claude Code dari checkout lokal:
+### Claude Code dari checkout lokal
 
 ```bash
+claude plugin validate .
 claude plugin marketplace add ./
 claude plugin install viserys@viserys --scope user
 ```
 
-Detail platform, global setup, update, dan batas dukungan ada di [`docs/installation.md`](docs/installation.md).
+## Cara memakai Viserys
 
-## Cara memakai skill
+### Automatic routing
 
-### 1. Automatic routing
-
-Minta pekerjaan secara natural. Agent memilih skill yang cocok dari deskripsi skill:
+Minta pekerjaan secara natural. Viserys memilih skill yang cocok dari intent:
 
 ```text
 Bantu debug test yang gagal dan cari root cause-nya.
 ```
 
 ```text
-Buat UI dashboard yang product-specific dan jangan menghasilkan AI slop.
+Rancang API pagination yang backward-compatible.
 ```
 
-Gunakan automatic routing ketika kamu ingin Viserys memilih workflow berdasarkan intent.
+### Direct skill invocation
 
-### 2. Direct skill invocation
-
-Sebut skill secara eksplisit ketika workflow tertentu wajib dipakai:
+Sebut skill bila workflow tertentu wajib digunakan:
 
 ```text
 Gunakan spec-driven-development untuk mendefinisikan feature ini.
 ```
 
-```text
-Gunakan get-design critique untuk mengevaluasi landing page ini.
-```
+### Commands
 
-### 3. Slash commands
+| Tujuan | Claude Code | Gemini / Antigravity |
+|---|---|---|
+| Requirements mendalam | `/get-prd` | `/get-prd` |
+| Database schema | `/get-schema` | `/get-schema` |
+| Executable task files | `/get-tasks` | `/get-tasks` |
+| Feature specification | `/spec` | `/spec` |
+| Implementation plan | `/plan` | `/planning` |
+| Incremental build | `/build` | `/build` |
+| Test workflow | `/test` | `/test` |
+| Code review via `maester` | `/review` | `/review` |
+| Pre-launch fan-out | `/ship` | `/ship` |
+| Web performance | `/webperf` | `/webperf` |
+| UI/design workflow | `/get-design` | `/get-design` |
 
-Command adalah shortcut untuk workflow yang sering dipakai. Contoh:
-
-```text
-/spec
-/plan
-/build
-/test
-/review
-/ship
-/get-prd
-/get-schema
-/get-tasks
-/get-design critique landing page
-```
-
-Nama command dapat berbeda antar harness. Misalnya Claude memakai `/plan`, sedangkan adapter Gemini dan Antigravity memakai `/planning`. Lihat [command catalog](docs/commands.md).
-
-### 4. Viserys mode di OpenCode dan OMP
-
-Pada OpenCode, pilih primary agent `viserys` dengan `Tab`.
-
-Pada OMP, aktifkan mode satu sesi dengan:
-
-```text
-/viserys hai
-```
-
-Setelah aktif, Viserys tetap menjadi orchestrator sampai sesi berakhir: memilih skill, menjalankan workflow, dan mendelegasikan pekerjaan ke specialist bila relevan.
+Command behavior dan adapter differences: [`docs/commands.md`](docs/commands.md).
 
 ## Workflow yang direkomendasikan
 
-### Feature sederhana
+### Feature
 
 ```text
 /spec → /plan → /build → /test → /review → /ship
@@ -134,71 +125,63 @@ Setelah aktif, Viserys tetap menjadi orchestrator sampai sesi berakhir: memilih 
 
 ```text
 debugging-and-error-recovery
-→ /test
+→ test-driven-development
 → /review
 ```
 
-Penjelasan lengkap dan output artifact ada di [`docs/workflows.md`](docs/workflows.md).
-
-## Skills
-
-### DEFINE
-
-`get-prd`, `idea-refine`, `interview-me`, `spec-driven-development`, `constraint-driven-development`
-
-### PLAN
-
-`get-schema`, `get-tasks`, `planning-and-task-breakdown`
-
-### BUILD
-
-`incremental-implementation`, `test-driven-development`, `context-engineering`, `source-driven-development`, `doubt-driven-development`, `get-design`, `frontend-ui-engineering`, `api-and-interface-design`
-
-### VERIFY
-
-`browser-testing-with-devtools`, `debugging-and-error-recovery`
-
-### REVIEW
-
-`code-review-and-quality`, `code-simplification`, `security-and-hardening`, `performance-optimization`
-
-### SHIP
-
-`git-workflow-and-versioning`, `ci-cd-and-automation`, `deprecation-and-migration`, `documentation-and-adrs`, `observability-and-instrumentation`, `shipping-and-launch`
-
-Katalog trigger, boundary, command wrapper, dan output tiap skill ada di [`docs/skills.md`](docs/skills.md).
+Recipes lengkap: [`docs/workflows.md`](docs/workflows.md).
 
 ## Personas
 
 | Persona | Fokus |
 |---|---|
-| `code-reviewer` | Correctness, readability, architecture, security, performance |
-| `test-engineer` | Test strategy, coverage, dan prove-it pattern |
-| `security-auditor` | Threat modeling dan vulnerability detection |
-| `web-performance-auditor` | Core Web Vitals dan web performance |
+| `strategist` | Full planning, dependency graph, task slicing, acceptance criteria |
+| `maester` | Correctness, readability, architecture, security, performance |
+| `kingsguard` | Threat modeling dan vulnerability detection |
+| `prover` | Test strategy, coverage, dan prove-it pattern |
+| `racer` | Core Web Vitals dan web performance |
+| `artisan` | Product UI, visual hierarchy, accessibility, responsive behavior |
+| `chronicler` | ADR, API docs, migration notes, changelog, release documentation |
 
-Persona berjalan sebagai subagent hanya pada harness yang mendukung mekanisme tersebut. Lihat [`docs/personas-and-orchestration.md`](docs/personas-and-orchestration.md).
+`/ship` selalu menjalankan `maester`, `kingsguard`, `prover`, dan `chronicler` secara paralel; `artisan` ditambahkan hanya untuk perubahan UI/web. Persona behavior bergantung pada kemampuan subagent harness. Lihat [`docs/personas-and-orchestration.md`](docs/personas-and-orchestration.md).
 
-## Repository structure
+## Skills
+
+| Phase | Skills |
+|---|---|
+| **DEFINE** | `get-prd`, `idea-refine`, `interview-me`, `spec-driven-development`, `constraint-driven-development` |
+| **PLAN** | `get-schema`, `get-tasks`, `planning-and-task-breakdown` |
+| **BUILD** | `incremental-implementation`, `test-driven-development`, `context-engineering`, `source-driven-development`, `doubt-driven-development`, `get-design`, `frontend-ui-engineering`, `api-and-interface-design` |
+| **VERIFY** | `browser-testing-with-devtools`, `debugging-and-error-recovery` |
+| **REVIEW** | `code-review-and-quality`, `code-simplification`, `security-and-hardening`, `performance-optimization` |
+| **SHIP** | `git-workflow-and-versioning`, `ci-cd-and-automation`, `deprecation-and-migration`, `documentation-and-adrs`, `observability-and-instrumentation`, `shipping-and-launch` |
+
+Trigger, boundary, dan output tiap skill: [`docs/skills.md`](docs/skills.md).
+
+## Repository map
 
 | Path | Isi |
 |---|---|
-| `skills/` | 29 workflow skills |
-| `agents/` | Reviewer personas |
-| `commands/` | Adapter commands |
-| `.claude/commands/` | Claude Code commands |
-| `.gemini/commands/` | Gemini CLI commands |
-| `.opencode/` | OpenCode agent dan command adapter |
+| `skills/` | 29 workflow skills dan per-skill references |
+| `agents/` | 7 specialist persona prompts |
+| `.claude/commands/` | Claude Code command adapters |
+| `.gemini/commands/` | Gemini CLI command adapters |
+| `commands/` | Antigravity command adapters; juga dideklarasikan oleh manifest Claude |
+| `.opencode/` + `opencode.json` | OpenCode agent/command adapters dan root project config |
+| `.claude-plugin/` | Claude plugin manifest |
+| `.codex-plugin/` | Codex skills manifest |
+| `docs/` | User, maintainer, dan adapter documentation |
 | `references/` | Shared checklists dan orchestration guidance |
-| `evals/` | Trigger dan behavioral evals |
-| `scripts/` | Structural validators dan eval runner |
-| `hooks/` | Optional session lifecycle hooks |
+| `evals/` | Deterministic dan optional behavioral evals |
+| `scripts/` | Structural validators, eval runner, dan tests |
+| `hooks/` | Optional lifecycle hooks |
 
 ## Validation
 
 ```bash
 node scripts/validate-skills.js
 node scripts/validate-commands.js
+node scripts/validate-personas.js
 node scripts/validate-artifact-paths.js
 node scripts/validate-reference-links.js
 node scripts/validate-versions.js
@@ -206,8 +189,15 @@ node scripts/run-evals.js --min-rank1 95
 node --test scripts/*-test.js scripts/lib/*-test.js
 ```
 
+CI juga memvalidasi Claude plugin manifest dan installation flow. Detail validation contract: [`CONTRIBUTING.md`](CONTRIBUTING.md#validasi).
+
+## Community
+
+Butuh bantuan, ingin berdiskusi, atau berbagi pengalaman memakai Viserys? [Join Discord Viserys](https://discord.gg/WR6rg5YAy).
+
 ## Documentation
 
+- [Documentation index](docs/README.md)
 - [Installation dan support matrix](docs/installation.md)
 - [Command catalog](docs/commands.md)
 - [Workflow recipes](docs/workflows.md)

@@ -44,7 +44,7 @@ Sections appear in this order.
 | `# Title` | Human-readable name |
 | `## Overview` | What the skill does and why it matters, one or two paragraphs |
 | `## When to Use` | Triggering conditions as bullets, plus a **When NOT to use** line |
-| `## The <Process>` | The numbered workflow the agent follows, with concrete steps |
+| `## The <Process>` | A level-two process/workflow section when the skill is sequential; reference-style skills may organize equivalent actionable guidance under domain sections |
 | `## Common Rationalizations` | Two-column table: the excuse an agent makes, and the rebuttal |
 | `## Red Flags` | Observable signs the skill is being skipped or misapplied |
 | `## Verification` | Checklist of evidence required before the skill counts as complete |
@@ -109,7 +109,7 @@ Skills reference these with a relative path, for example `../../references/defin
 2. Create `skills/<name>/SKILL.md` with the frontmatter and the required sections.
 3. Add `evals/cases/<name>.json` with at least 3 positive triggers, 2 negative triggers, and 1 behavioral eval.
 4. If the eval is `execution` kind, add its fixture under `evals/fixtures/<name>/`.
-5. Update `README.md` and `docs/README.md` where the skill list is enumerated.
+5. Update the phase/count summary in `README.md` when needed and the canonical skill catalog in `docs/skills.md`.
 6. Run `node scripts/validate-skills.js` and `node scripts/run-evals.js`.
 
 Missing case files, incomplete case counts, unknown `kind` values, invalid fixture paths, and absent required fixtures are validation errors, not warnings.

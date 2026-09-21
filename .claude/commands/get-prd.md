@@ -19,4 +19,4 @@ Follow the skill's eight phases in order:
 
 Do not move to PRD authoring before the restate is confirmed. Do not ask the user for facts you can look up yourself. Save the PRD only after the explicit yes.
 
-After approval, hand off to planning-and-task-breakdown.
+After approval, hand off to `/plan`, which runs planning-and-task-breakdown through the `strategist` persona.

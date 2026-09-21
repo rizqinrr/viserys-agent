@@ -1,16 +1,20 @@
-description = "Conduct a five-axis code review — correctness, readability, architecture, security, performance"
+description = "Conduct a five-axis code review via the maester persona — correctness, readability, architecture, security, performance"
 
 prompt = """
-Invoke the code-review-and-quality skill.
+Invoke the code-review-and-quality skill. This command is read-only: do not edit files, run mutating shell commands, stage, commit, checkout, reset, or clean. Collect unstaged changes with `git diff`, staged changes with `git diff --cached`, untracked paths with `git ls-files --others --exclude-standard` plus their contents, and deletions from both diffs. If the user supplies a fixed comparison point, review the complete diff from that point instead. If a `maester` custom subagent has been registered in the active Gemini environment, call it with the complete target plus relevant task/spec context. Otherwise apply agents/maester.md in the main context and label the result as degraded single-context review.
 
-Review the current changes (staged or recent commits) across all five axes:
+The `maester` pass must review all five axes:
+1. Correctness — Does it match the spec? Are edge cases and error paths handled? Are tests adequate?
+2. Readability — Are names clear? Is control flow straightforward? Is the code well-organized?
+3. Architecture — Does it follow existing patterns? Are boundaries and abstractions appropriate?
+4. Security — Is input validated? Are secrets safe? Is authorization checked?
+5. Performance — Are there N+1 queries, unbounded operations, or avoidable rendering costs?
 
-1. **Correctness** — Does it match the spec? Edge cases handled? Tests adequate?
-2. **Readability** — Clear names? Straightforward logic? Well-organized?
-3. **Architecture** — Follows existing patterns? Clean boundaries? Right abstraction level?
-4. **Security** — Input validated? Secrets safe? Auth checked? (Use security-and-hardening skill)
-5. **Performance** — No N+1 queries? No unbounded ops? (Use performance-optimization skill)
+Use the canonical severity taxonomy:
+- Critical — Blocks merge.
+- Required — Must address before merge.
+- Optional — Worth considering but not required.
+- Nit — Minor and optional.
 
-Categorize findings as Critical, Important, or Suggestion.
-Output a structured review with specific file:line references and fix recommendations.
+Return the structured review from agents/maester.md with specific file:line references and fix recommendations. If subagents are unavailable, apply the maester prompt in the main context and label the result as degraded single-context review.
 """

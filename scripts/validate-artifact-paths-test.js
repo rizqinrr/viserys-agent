@@ -47,11 +47,13 @@ test('passes when producers and consumers use the canonical artifact paths', () 
   writeFile(root, '.claude/commands/build.md', 'Look for a spec at `SPEC.md`, `docs/SPEC.md`, or under `spec/`. Require `tasks/plan.md`.\n');
   writeFile(root, 'skills/spec-driven-development/SKILL.md', 'Save the plan to `tasks/plan.md` and the task list to `tasks/todo.md`.\n');
   writeFile(root, 'skills/planning-and-task-breakdown/SKILL.md', 'Save to `tasks/plan.md` and `tasks/todo.md`.\n');
+  writeFile(root, 'docs/commands.md', 'Specs use `SPEC.md`, `docs/SPEC.md`, or `spec/checkout.md`. Plans use `tasks/plan.md` and `tasks/todo.md`.\n');
+  writeFile(root, 'docs/workflows.md', 'Output: `SPEC.md`, `docs/SPEC.md`, `spec/checkout.md`, `tasks/plan.md`, `tasks/todo.md`.\n');
 
   const result = run(root);
 
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.match(result.stdout, /5 files checked — 0 error\(s\) — PASSED/);
+  assert.match(result.stdout, /7 files checked — 0 error\(s\) — PASSED/);
 });
 
 test('fails when a producer drifts to an unapproved artifact path (the #93 regression)', () => {
@@ -88,6 +90,26 @@ test('accepts the docs/SPEC.md alternate spec location', () => {
 
   assert.equal(result.status, 0, result.stdout + result.stderr);
   assert.match(result.stdout, /1 files checked — 0 error\(s\) — PASSED/);
+});
+
+test('accepts a named spec under spec/', () => {
+  const root = makeSandbox();
+  writeFile(root, '.claude/commands/build.md', 'Look for the spec at `spec/checkout.md`.\n');
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /1 files checked — 0 error\(s\) — PASSED/);
+});
+
+test('rejects a nested named spec outside the approved spec shape', () => {
+  const root = makeSandbox();
+  writeFile(root, '.claude/commands/build.md', 'Look for the spec at `spec/features/checkout.md`.\n');
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /spec\/features\/checkout\.md/);
 });
 
 test('ignores non-artifact markdown references (no false positives)', () => {

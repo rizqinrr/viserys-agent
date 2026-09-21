@@ -1,22 +1,46 @@
-# Installation
+# Installation and Harness Support
 
-Panduan ini membedakan dukungan yang teruji dari adapter yang tersedia tetapi belum memiliki installer end-to-end.
+Panduan ini membedakan kemampuan yang tersedia di repository, structural validation, dan runtime end-to-end verification. Core skills adalah Markdown; plugin, command adapter, persona, hook, dan browser tooling mempunyai prerequisite tersendiri.
+
+## Support matrix
+
+| Harness | Skills | Commands | Primary agent | Personas | Hooks | Status |
+|---|---:|---:|---:|---:|---:|---|
+| OpenCode | Ya | `/get-design` adapter repo; lainnya via routing | `viserys` | Root `agents/` tidak otomatis aktif | Tidak disediakan | Project adapter tersedia |
+| Claude Code | Ya | 13 adapters | Plugin session | 7 plugin personas | SessionStart optional | Paling lengkap; install flow diuji CI |
+| Gemini CLI | Ya bila skill source dikonfigurasi | 13 adapters | Tidak ada Viserys primary adapter | Bergantung custom-agent support | Tidak disediakan | Available, structurally tested; runtime E2E belum diverifikasi |
+| Antigravity | Ya bila skill source dikonfigurasi | 13 adapters | Tidak ada Viserys primary adapter | Bergantung custom-agent support | Tidak disediakan | Available, structurally tested; runtime E2E belum diverifikasi |
+| OMP | Ya | Native prompts/commands | `/viserys` session mode | Native OMP agents | Bergantung OMP | Kompatibel melalui copy/link structure |
+| Codex | Ya, melalui manifest | Tidak ada native command catalog | Tidak ada | Tidak terverifikasi | Tidak disediakan | Skills-only pada level manifest |
+
+`validate-commands.js` memverifikasi parity filename dan description untuk Claude, Gemini, dan Antigravity. Structural validation tidak sama dengan runtime installation test.
 
 ## OpenCode
 
+### Prerequisite
+
+- Checkout Viserys tersedia secara lokal.
+- OpenCode dijalankan dari root repository untuk project scope.
+
 ### Project scope
 
-Buka root repository Viserys dari OpenCode, lalu tekan `Tab` dan pilih `viserys`.
+```text
+1. Buka root repository Viserys dari OpenCode.
+2. Tekan Tab.
+3. Pilih agent viserys.
+```
 
-Adapter project berada di `.opencode/`:
+Adapter project:
 
-- `.opencode/agent/viserys.md` — primary agent.
-- `.opencode/opencode.json` — mendaftarkan `AGENTS.md` dan `skills/`.
+- `.opencode/agents/viserys.md` — primary agent.
+- `opencode.json` di root — project config yang memuat `AGENTS.md` dan mendaftarkan `skills/`. OpenCode memuat project config dari root project/Git directory; `.opencode/` dipakai untuk agents, commands, dan plugin directories.
 - `.opencode/command/get-design.md` — command `/get-design`.
+
+Verifikasi: primary agent `viserys` muncul dan direct skill invocation dapat menemukan skill dari `skills/`.
 
 ### Global scope
 
-Salin agent Viserys ke konfigurasi global OpenCode dan daftarkan folder skills checkout ini pada `skills.paths`:
+Salin `.opencode/agents/viserys.md` ke `~/.config/opencode/agents/viserys.md`, lalu daftarkan checkout skills dengan absolute path:
 
 ```json
 {
@@ -29,13 +53,21 @@ Salin agent Viserys ke konfigurasi global OpenCode dan daftarkan folder skills c
 }
 ```
 
-Salin `.opencode/agent/viserys.md` ke salah satu lokasi agent global OpenCode yang didukung, misalnya `~/.config/opencode/agents/viserys.md`. Gunakan path absolut untuk checkout skills agar agent tetap menemukan seluruh skill.
+Jangan menyalin atau mengubah konfigurasi global tanpa persetujuan pemilik environment. Dokumentasi OpenCode: [skills](https://opencode.ai/docs/skills/) dan [agents](https://opencode.ai/docs/agents/).
 
-OpenCode membaca skills dari `SKILL.md` dan agent dari file Markdown. Lihat dokumentasi OpenCode untuk [skills](https://opencode.ai/docs/skills/) dan [agents](https://opencode.ai/docs/agents/).
+### Batasan
+
+Persona di root `agents/` sengaja tidak diduplikasi ke `.opencode/agents/`. OpenCode memakai skill routing atau degraded single-context fallback kecuali pengguna membuat adapter persona sendiri.
 
 ## Claude Code
 
-Dari checkout Viserys:
+### Prerequisite
+
+- Claude Code CLI.
+- Git checkout Viserys.
+- Bash dan `jq` hanya diperlukan untuk optional SessionStart hook.
+
+### Install dari checkout lokal
 
 ```bash
 claude plugin validate .
@@ -43,24 +75,74 @@ claude plugin marketplace add ./
 claude plugin install viserys@viserys --scope user
 ```
 
-Manifest Claude mendaftarkan:
+`.claude-plugin/plugin.json` secara eksplisit mendaftarkan `skills/` dan dua command paths: `.claude/commands/` serta `commands/`. Root `agents/` dan `hooks/` mengikuti plugin discovery/layout behavior; keduanya bukan field eksplisit dalam manifest tersebut.
 
-- `.claude/commands/` dan `commands/` sebagai command sources.
-- `skills/` sebagai skill source.
-- `agents/` sebagai persona source melalui plugin.
-- `hooks/` sebagai optional session lifecycle integration.
+Setelah install, coba `/spec`, `/plan`, `/review`, atau `/ship`. Bila CLI menampilkan namespace plugin, gunakan completion yang ditawarkan.
 
-Setelah terpasang, gunakan `/spec`, `/plan`, `/build`, `/test`, `/review`, `/ship`, atau `/get-design`. Jika versi Claude menampilkan command dengan namespace plugin, gunakan completion yang ditawarkan oleh CLI.
+### Verifikasi
 
-Hook SessionStart menggunakan shell script dan dapat membutuhkan Bash serta `jq`. Skills tetap dapat dipakai tanpa hook, tetapi automatic context injection dari hook tidak tersedia.
+```bash
+claude plugin validate .
+```
+
+CI juga menguji marketplace add dan plugin install. Persona discovery dan command runtime tetap bergantung versi Claude Code yang digunakan.
+
+### Hooks
+
+SessionStart hook bersifat optional. Tanpa Bash atau `jq`, skills dan commands tetap tersedia tetapi automatic meta-skill injection tidak berjalan. Detail: [`hooks.md`](hooks.md).
+
+## Gemini CLI
+
+Repository menyediakan 13 adapter di `.gemini/commands/`.
+
+### Availability
+
+- Filename dan description parity divalidasi terhadap Claude dan Antigravity.
+- Planning command bernama `/planning`, bukan `/plan`.
+- Command bodies menggunakan syntax/prompt yang disesuaikan untuk Gemini.
+- Runtime installation dan persona dispatch belum diuji end-to-end oleh CI repository ini.
+
+### Setup
+
+Tempatkan atau hubungkan file `.gemini/commands/*.toml` ke command scope Gemini CLI yang digunakan. Root `agents/` adalah persona source, bukan `.gemini/agents/` adapter; copy/register persona ke lokasi custom-agent yang didukung versi Gemini bila true subagent dispatch dibutuhkan. Tanpa itu, commands memakai degraded single-context fallback. Karena repository belum menyediakan installer Gemini, ikuti mekanisme custom command dan custom agent resmi dari versi Gemini CLI yang dipakai.
+
+### Verifikasi
+
+```bash
+node scripts/validate-commands.js
+node scripts/validate-personas.js
+```
+
+Lalu pastikan command seperti `/review` dan `/planning` muncul pada session Gemini. Kegagalan runtime harus dilaporkan sebagai compatibility gap, bukan dianggap structural-validator failure.
+
+## Antigravity
+
+Repository menyediakan 13 TOML adapter di `commands/`.
+
+### Availability
+
+- Filename dan description parity divalidasi terhadap Claude dan Gemini.
+- Planning command bernama `/planning`.
+- Runtime installation dan persona dispatch belum diuji end-to-end oleh CI repository ini.
+
+### Setup
+
+Tempatkan atau hubungkan `commands/*.toml`, `skills/`, dan bila didukung `agents/` ke project/user scope Antigravity yang digunakan. Repository belum menyediakan installer Antigravity; gunakan mechanism command dan skill source dari versi harness aktif.
+
+### Verifikasi
+
+```bash
+node scripts/validate-commands.js
+node scripts/validate-personas.js
+```
+
+Setelah wiring, pastikan `/review`, `/planning`, dan `/ship` tersedia. Status adapter tetap **available, structurally tested** sampai runtime E2E ditambahkan ke CI.
 
 ## OMP
 
-OMP mendukung skill dengan satu folder per skill yang berisi `SKILL.md`, plus agent Markdown dan prompt/command sesuai scope.
+OMP mendukung satu folder per skill berisi `SKILL.md`, agent Markdown, dan prompt sesuai scope.
 
 ### Project scope
-
-Salin atau tautkan struktur berikut ke project:
 
 ```text
 .omp/
@@ -72,8 +154,6 @@ Salin atau tautkan struktur berikut ke project:
 
 ### User scope
 
-Gunakan struktur user OMP aktif:
-
 ```text
 ~/.omp/agent/
 ├── agents/
@@ -82,37 +162,43 @@ Gunakan struktur user OMP aktif:
     └── <skill-name>/SKILL.md
 ```
 
-Untuk paket Viserys, salin `skills/` ke lokasi skills OMP dan `agents/` ke lokasi agents jika ingin specialist tersedia lintas project. Prompt `/get-design` dapat ditempatkan sebagai `prompts/get-design.md` pada scope yang diinginkan.
+Salin atau tautkan `skills/` ke lokasi skills OMP. Salin `agents/` hanya bila specialist personas dibutuhkan. Prompt `/get-design` dapat ditempatkan sebagai `prompts/get-design.md` pada scope yang dipilih.
 
-Aktifkan mode Viserys selama satu sesi dengan:
+Aktifkan session mode:
 
 ```text
 /viserys hai
 ```
 
-OMP membaca perubahan skill saat sesi baru dimulai; agent definitions dapat direfresh dari Agent Hub sesuai versi OMP yang digunakan.
-
-Dokumentasi OMP: [skills](https://omp.sh/docs/skills), [subagent authoring](https://omp.sh/docs/subagent-authoring), dan [prompt templates](https://omp.sh/docs/prompt-templates).
+Mulai sesi baru atau refresh Agent Hub agar perubahan definition ter-load. Dokumentasi OMP: [skills](https://omp.sh/docs/skills), [subagent authoring](https://omp.sh/docs/subagent-authoring), dan [prompt templates](https://omp.sh/docs/prompt-templates).
 
 ## Codex
 
-Manifest Codex mendaftarkan skills:
+`.codex-plugin/plugin.json` mendaftarkan `skills/` dan metadata interface Viserys. Dukungan saat ini adalah skills-only pada level manifest.
 
-```text
-.codex-plugin/plugin.json
+Tidak tersedia:
+
+- native Viserys command catalog;
+- primary agent adapter;
+- persona orchestration yang terverifikasi;
+- installer khusus repository.
+
+Distribusikan folder `skills/` melalui mechanism plugin/skills Codex yang digunakan. Jangan mengklaim command atau persona support tanpa runtime verification.
+
+## Windows notes
+
+Command validation menggunakan Node.js dan bekerja dari PowerShell:
+
+```powershell
+node scripts/validate-commands.js
+node scripts/validate-personas.js
 ```
 
-Distribusikan folder `skills/` sebagai skill source sesuai mekanisme plugin/skills Codex yang kamu gunakan. Dukungan saat ini adalah **skills-only pada level manifest**; command catalog, persona orchestration, dan installer Codex khusus belum disediakan oleh repository ini.
+Claude SessionStart hook tetap membutuhkan Bash-compatible shell dan `jq`; PowerShell saja tidak menjalankan shell hook tersebut.
 
-## Update
+## Update dan uninstall
 
-Untuk semua harness, update checkout Viserys lalu reload atau restart harness sesuai mekanismenya. Jangan menyalin hanya `SKILL.md` tanpa folder `references/` pendukung bila skill tersebut menggunakannya.
-
-## Batas dukungan
-
-| Harness | Skills | Commands | Primary agent | Personas | Status |
-|---|---:|---:|---:|---:|---|
-| OpenCode | Ya | `/get-design` adapter repo | `viserys` | Manual/adapter-specific | Project adapter lengkap |
-| Claude Code | Ya | 13 command adapters | Plugin agent | Plugin personas | Paling teruji |
-| OMP | Ya | Prompt/command native | `/viserys` session mode | Native OMP agents | Kompatibilitas native |
-| Codex | Ya, manifest | Belum ada catalog native | Tidak ada adapter Viserys khusus | Tidak terverifikasi | Skills-only |
+- **Checkout-based setup:** pull/update repository lalu restart atau reload harness.
+- **Copied setup:** sinkronkan seluruh skill directory termasuk `references/`, bukan hanya `SKILL.md`.
+- **Plugin setup:** gunakan update/uninstall mechanism harness yang memasang plugin.
+- Setelah update, jalankan structural validators dan smoke-test satu command utama.

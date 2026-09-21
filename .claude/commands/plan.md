@@ -2,7 +2,7 @@
 description: Break work into small verifiable tasks with acceptance criteria and dependency ordering
 ---
 
-Invoke the viserys:planning-and-task-breakdown skill.
+Invoke the viserys:planning-and-task-breakdown skill, then spawn the plugin-scoped `viserys:strategist` subagent and pass it the spec plus relevant codebase context. `strategist` is the canonical planner for Viserys; keep the pass read-only and return its executable plan for human review. If subagents are unavailable, apply `agents/strategist.md` in the main context and label the result as degraded single-context planning.
 
 Read the existing spec (SPEC.md or equivalent) and the relevant codebase sections. Then:
 

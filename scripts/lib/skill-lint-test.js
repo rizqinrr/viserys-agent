@@ -14,9 +14,13 @@ function withAllSections(frontmatter) {
   return [
     frontmatter,
     '',
+    '# Alpha',
+    '',
     '## Overview',
     'x',
     '## When to Use',
+    'x',
+    '## The Alpha Process',
     'x',
     '## Common Rationalizations',
     'x',
@@ -53,7 +57,7 @@ test('a directory named after an Object.prototype key is not exempt from section
   const { errors, exempt } = lintSkillContent('constructor', content, KNOWN);
 
   assert.equal(exempt, false, 'exemptions must come from the allowlist, not the prototype chain');
-  assert.equal(errors.filter(e => /Missing required section/.test(e)).length, 5);
+  assert.equal(errors.filter(e => /Missing required section/.test(e)).length, 6);
 });
 
 test('a genuinely allowlisted skill is still exempt', () => {
@@ -132,6 +136,20 @@ test('reports a workflow step declared without a matching process section', () =
 
   assert.equal(errors.length, 1);
   assert.match(errors[0], /Workflow declares Step 2 but has no matching process section/);
+});
+
+test('accepts reference-style skills without a named process heading', () => {
+  const content = withAllSections(VALID_FRONTMATTER).replace('## The Alpha Process\nx\n', '## Guidance\nx\n');
+  const { errors } = lintSkillContent('alpha', content, KNOWN);
+  assert.deepEqual(errors, []);
+});
+
+test('reports required sections that are out of order', () => {
+  const content = withAllSections(VALID_FRONTMATTER)
+    .replace('## Red Flags\nx\n## Verification\nx', '## Verification\nx\n## Red Flags\nx');
+  const { errors } = lintSkillContent('alpha', content, KNOWN);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], /Required section out of order/);
 });
 
 test('reports a missing frontmatter block', () => {

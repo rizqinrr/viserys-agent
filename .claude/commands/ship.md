@@ -4,39 +4,46 @@ description: Run the pre-launch checklist via parallel fan-out to specialist per
 
 Invoke the viserys:shipping-and-launch skill.
 
-`/ship` is a **fan-out orchestrator**. It runs three specialist personas in parallel against the current change, then merges their reports into a single go/no-go decision with a rollback plan. The personas operate independently — no shared state, no ordering — which is what makes parallel execution safe and useful here.
+`/ship` is a **fan-out orchestrator**. It runs four core specialist personas in parallel against the current change, adds `artisan` when the change affects a web-facing interface, then merges their reports into a single go/no-go decision with a rollback plan.
 
-## Phase A — Parallel fan-out
+## Phase A — Determine the fan-out
 
-Spawn three subagents concurrently using the Agent tool. **Issue all three Agent tool calls in a single assistant turn so they execute in parallel** — sequential calls defeat the purpose of this command.
+Always include:
 
-In Claude Code, each call passes `subagent_type` matching the persona's `name` field:
+1. **`viserys:maester`** — Run a five-axis review (correctness, readability, architecture, security, performance) on all staged, unstaged, and untracked changes, or the fixed comparison point supplied by the user.
+2. **`viserys:kingsguard`** — Run a vulnerability and threat-model pass. Check OWASP Top 10, secrets handling, auth/authz, dependency CVEs.
+3. **`viserys:prover`** — Analyze test coverage. Identify gaps in happy paths, edge cases, error paths, and concurrency scenarios.
+4. **`viserys:chronicler`** — Review documentation readiness: public contracts, README, ADRs, changelog, compatibility, and migration notes.
 
-1. **`code-reviewer`** — Run a five-axis review (correctness, readability, architecture, security, performance) on the staged changes or recent commits. Output the standard review template.
-2. **`security-auditor`** — Run a vulnerability and threat-model pass. Check OWASP Top 10, secrets handling, auth/authz, dependency CVEs. Output the standard audit report.
-3. **`test-engineer`** — Analyze test coverage for the change. Identify gaps in happy path, edge cases, error paths, and concurrency scenarios. Output the standard coverage analysis.
+Also include **`viserys:artisan`** when the change touches browser routes, UI components, CSS, design-system tokens, frontend accessibility, or responsive behavior. In `/ship`, `artisan` is review-only.
 
-In other harnesses without an Agent tool, invoke each persona's system prompt sequentially and treat their outputs as if returned in parallel — the merge phase still works.
+## Phase B — Parallel fan-out
 
-Constraints (from Claude Code's subagent model):
-- Subagents cannot spawn other subagents — do not let one persona delegate to another.
-- Each subagent gets its own context window and returns only its report to this main session.
-- If you need teammates that talk to each other instead of just reporting back, use Claude Code Agent Teams and reference these personas as teammate types (see `references/orchestration-patterns.md`).
+Spawn all selected subagents concurrently using the Agent tool. Issue every Agent tool call in a single assistant turn so they execute in parallel. Each call uses the plugin-scoped identifier `viserys:<persona-name>` as `subagent_type`.
 
-**Persona resolution.** If you've defined your own `code-reviewer`, `security-auditor`, or `test-engineer` in `.claude/agents/` or `~/.claude/agents/`, those take precedence over this plugin's versions — `/ship` picks up your customizations automatically. This is intentional: plugin subagents sit at the bottom of Claude Code's scope priority table, so user-level definitions win by design.
+In harnesses without an Agent tool, apply each selected persona prompt separately in the main context, explicitly mark the process as degraded single-context review, and preserve independent passes before merging.
 
-## Phase B — Merge in main context
+Constraints:
+- Viserys personas do not delegate to other personas, even if the installed Claude version supports bounded nested delegation.
+- Each subagent gets its own context and returns only its report.
+- Keep the orchestration flat; the main session performs the merge.
+- For collaborative investigation where teammates must challenge each other, use Agent Teams as documented in `references/orchestration-patterns.md`.
 
-Once all three reports are back, the main agent (not a sub-persona) synthesizes them:
+**Persona resolution.** Plugin personas use scoped identifiers (`viserys:<persona-name>`). Project or user agents with bare names are separate definitions and do not override those scoped identifiers; customize plugin behavior by editing/forking the plugin or by changing this command to invoke the desired project/user agent explicitly.
 
-1. **Code Quality** — Aggregate Critical/Important findings from `code-reviewer` and any failing tests, lint, or build output. Resolve duplicates between reviewers.
-2. **Security** — Promote any Critical/High `security-auditor` findings to launch blockers. Cross-reference with `code-reviewer`'s security axis.
-3. **Performance** — Pull from `code-reviewer`'s performance axis; cross-check Core Web Vitals if applicable.
-4. **Accessibility** — Verify keyboard nav, screen reader support, contrast (not covered by the three personas — handle directly here, or invoke the accessibility checklist).
-5. **Infrastructure** — Env vars, migrations, monitoring, feature flags. Verify directly.
-6. **Documentation** — README, ADRs, changelog. Verify directly.
+## Phase C — Merge in main context
 
-## Phase C — Decision and rollback
+Once all selected reports are back, the main agent synthesizes them:
+
+1. **Code Quality** — Aggregate Critical/Required findings from `maester` and failing tests, lint, typecheck, or build output.
+2. **Security** — Promote Critical/High `kingsguard` findings to launch blockers. Cross-reference `maester` without duplicating findings.
+3. **Testing** — Treat missing proof for core behavior from `prover` as a release-readiness gap.
+4. **Documentation** — Promote required public-contract, migration, or operational documentation from `chronicler`.
+5. **UI and Accessibility** — When `artisan` ran, include its required visual, responsive, and accessibility findings. Otherwise verify applicable non-visual accessibility concerns directly.
+6. **Performance** — Pull source-level concerns from `maester`; use `/webperf` and `racer` for a dedicated measured web-performance audit.
+7. **Infrastructure** — Verify env vars, migrations, monitoring, feature flags, and rollback prerequisites directly.
+
+## Phase D — Decision and rollback
 
 Produce a single output:
 
@@ -44,29 +51,31 @@ Produce a single output:
 ## Ship Decision: GO | NO-GO
 
 ### Blockers (must fix before ship)
-- [Source persona: Critical finding + file:line]
+- [Source persona: Critical/High finding + file:line]
 
 ### Recommended fixes (should fix before ship)
-- [Source persona: Important finding + file:line]
+- [Source persona: Required/Medium finding + file:line]
 
 ### Acknowledged risks (shipping anyway)
 - [Risk + mitigation]
 
 ### Rollback plan
-- Trigger conditions: [what signals would prompt rollback]
+- Trigger conditions: [signals that prompt rollback]
 - Rollback procedure: [exact steps]
 - Recovery time objective: [target]
 
 ### Specialist reports (full)
-- [code-reviewer report]
-- [security-auditor report]
-- [test-engineer report]
+- [maester report]
+- [kingsguard report]
+- [prover report]
+- [chronicler report]
+- [artisan report, when applicable]
 ```
 
 ## Rules
 
-1. The three Phase A personas run in parallel — never sequentially.
-2. Personas do not call each other. The main agent merges in Phase B.
+1. All selected Phase B personas run in parallel, never sequentially when the harness supports parallel calls.
+2. Personas do not call each other. The main agent merges their output.
 3. The rollback plan is mandatory before any GO decision.
-4. If any persona returns a Critical finding, the default verdict is NO-GO unless the user explicitly accepts the risk.
-5. **Skip the fan-out only if all of the following are true:** the change touches 2 files or fewer, the diff is under 50 lines, and it does not touch auth, payments, data access, or config/env. Otherwise, default to fan-out. `/ship` is designed for production-bound changes — when the blast radius is non-trivial, run the parallel review even if the diff looks small.
+4. Any Critical finding defaults the verdict to NO-GO unless the user explicitly accepts the risk.
+5. All four core personas run for every `/ship` invocation. Only `artisan` is conditional on UI/web scope.

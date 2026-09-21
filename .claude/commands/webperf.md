@@ -1,5 +1,5 @@
 ---
-description: Run a web performance audit via the web-performance-auditor persona
+description: Run a web performance audit via the racer persona
 ---
 
 `/webperf` targets web applications specifically. Do not use it for utility libraries, CLIs, or server-only code with no browser-facing output.
@@ -18,7 +18,7 @@ description: Run a web performance audit via the web-performance-auditor persona
 
 ## Run the audit
 
-Spawn the `web-performance-auditor` subagent. Pass it explicitly:
+Spawn the plugin-scoped `viserys:racer` subagent. Pass it explicitly:
 
 - The files, components, or diff under review
 - Any artifact paths (Lighthouse JSON, PSI JSON, CrUX response, trace) or pasted JSON content

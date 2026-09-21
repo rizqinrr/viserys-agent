@@ -39,6 +39,10 @@ const ARTIFACT_ALLOWLIST = new Set([
   'tasks/todo.md',  // task list (produced by /plan)
 ]);
 
+const ARTIFACT_PATTERNS = [
+  /^spec\/[^/]+\.md$/i,
+];
+
 // The files that make up the spec -> plan -> build pipeline. Absent files are
 // skipped, not failed: this validator checks path consistency, not presence.
 const GUARDED_FILES = [
@@ -47,15 +51,15 @@ const GUARDED_FILES = [
   '.claude/commands/build.md',
   'skills/spec-driven-development/SKILL.md',
   'skills/planning-and-task-breakdown/SKILL.md',
-  'docs/getting-started.md',
-  'docs/adoption-guide.md',
+  'docs/commands.md',
+  'docs/workflows.md',
 ];
 
 // Matches a path-like token ending in a spec/plan/todo artifact filename,
 // including an optional directory prefix with bracket placeholders like
 // docs/features/[feature-name]/spec.md. Case-insensitive so SPEC.md and a
 // drifted spec.md are both caught, then compared against the allowlist.
-const ARTIFACT_RE = /(?:[A-Za-z0-9._[\]-]+\/)*(?:spec|plan|todo)\.md/gi;
+const ARTIFACT_RE = /(?:spec\/(?:[A-Za-z0-9._[\]-]+\/)*[A-Za-z0-9._[\]-]+\.md|(?:[A-Za-z0-9._[\]-]+\/)*(?:spec|plan|todo)\.md)/gi;
 
 function findViolations(relPath) {
   const abs = path.join(ROOT, relPath);
@@ -67,9 +71,9 @@ function findViolations(relPath) {
     const matches = line.match(ARTIFACT_RE);
     if (!matches) return;
     for (const match of matches) {
-      if (!ARTIFACT_ALLOWLIST.has(match)) {
-        violations.push({ line: i + 1, match });
-      }
+      const approved = ARTIFACT_ALLOWLIST.has(match)
+        || ARTIFACT_PATTERNS.some(pattern => pattern.test(match));
+      if (!approved) violations.push({ line: i + 1, match });
     }
   });
   return violations;

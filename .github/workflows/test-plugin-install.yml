@@ -22,6 +22,15 @@ jobs:
       - name: Validate all skills
         run: node scripts/validate-skills.js
 
+      - name: Test skill linter
+        run: node --test scripts/lib/skill-lint-test.js
+
+      - name: Validate persona and orchestration contracts
+        run: node scripts/validate-personas.js
+
+      - name: Test persona validator
+        run: node --test scripts/validate-personas-test.js
+
       - name: Validate manifest versions
         run: node scripts/validate-versions.js
 

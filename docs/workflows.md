@@ -35,7 +35,7 @@ Gunakan ini ketika feature scope sudah cukup dipahami dan tidak membutuhkan prod
 ### Output canonical
 
 ```text
-SPEC.md atau docs/SPEC.md
+SPEC.md, docs/SPEC.md, atau spec/<module-id>.md
 tasks/plan.md
 tasks/todo.md
 ```
@@ -85,7 +85,7 @@ Untuk evaluasi tanpa edit:
 → doubt-driven-development
 → incremental-implementation
 → test-driven-development
-→ security-auditor
+→ kingsguard
 → /ship
 ```
 
@@ -96,7 +96,7 @@ Gunakan explicit human gates untuk auth, permissions, destructive migrations, pa
 ```text
 /spec
 → api-and-interface-design
-→ planning-and-task-breakdown
+→ strategist + planning-and-task-breakdown
 → incremental-implementation
 → test-driven-development
 → documentation-and-adrs

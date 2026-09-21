@@ -1,8 +1,10 @@
 # Orchestration Patterns
 
-Reference catalog of agent orchestration patterns this repo endorses, plus anti-patterns to avoid. Read this before adding a new slash command that coordinates multiple personas, or before introducing a new persona that "wraps" existing ones.
+Reference catalog of agent orchestration patterns this repo endorses, plus anti-patterns to avoid. Sections 1–5 and the anti-patterns are universal Viserys guidance. The Claude Code compatibility and Agent Teams sections are harness-specific implementation notes, not promises for OpenCode, Gemini, Antigravity, OMP, or Codex.
 
-The governing rule: **the user (or a slash command) is the orchestrator. Personas do not invoke other personas.** Skills are mandatory hops inside a persona's workflow.
+Read this before adding a slash command that coordinates multiple personas or introducing a persona that wraps existing roles.
+
+The governing rule: **the user or slash command is the orchestrator. Personas do not invoke other personas.** Skills are mandatory workflow hops inside persona or command execution.
 
 ---
 
@@ -13,15 +15,15 @@ The governing rule: **the user (or a slash command) is the orchestrator. Persona
 Single persona, single perspective, single artifact. The default and the cheapest option.
 
 ```
-user → code-reviewer → report → user
+user → maester → report → user
 ```
 
 **Use when:** the work is one perspective on one artifact and you can describe it in one sentence.
 
 **Examples:**
-- "Review this PR" → `code-reviewer`
-- "Find security issues in `auth.ts`" → `security-auditor`
-- "What tests are missing for the checkout flow?" → `test-engineer`
+- "Review this PR" → `maester`
+- "Find security issues in `auth.ts`" → `kingsguard`
+- "What tests are missing for the checkout flow?" → `prover`
 
 **Cost:** one round trip. The baseline you should always compare orchestrated patterns against.
 
@@ -32,12 +34,12 @@ user → code-reviewer → report → user
 A slash command that wraps one persona with the project's skills. Saves the user from re-explaining the workflow every time.
 
 ```
-/review → code-reviewer (with code-review-and-quality skill) → report
+/review → maester (with code-review-and-quality skill) → report
 ```
 
 **Use when:** the same single-persona invocation happens repeatedly with the same setup.
 
-**Examples in this repo:** `/review`, `/test`, `/code-simplify`.
+**Example in this repo:** `/review` dispatches `maester` with the `code-review-and-quality` skill. `/test` and `/code-simplify` remain skill wrappers unless their adapters explicitly dispatch a persona.
 
 **Cost:** same as direct invocation. The slash command is just a saved prompt.
 
@@ -50,9 +52,13 @@ A slash command that wraps one persona with the project's skills. Saves the user
 Multiple personas operate on the same input concurrently, each producing an independent report. A merge step (in the main agent's context) synthesizes them into a single decision.
 
 ```
-                    ┌─→ code-reviewer    ─┐
-/ship → fan out  ───┼─→ security-auditor ─┤→ merge → go/no-go + rollback
-                    └─→ test-engineer    ─┘
+                         ┌─→ maester       ─┐
+/ship → fan out  ────────┼─→ kingsguard    ─┤
+                         ├─→ prover        ─┤→ merge → go/no-go + rollback
+                         ├─→ chronicler    ─┤
+                         └─→ artisan*      ─┘
+
+* only when the change affects a web-facing interface
 ```
 
 **Use when:**
@@ -110,17 +116,28 @@ main agent → research sub-agent (reads 50 files) → digest → main agent con
 
 **Cost:** one isolated sub-agent context. Worth it any time the alternative is loading hundreds of files into the main context.
 
-**On Claude Code, use the built-in `Explore` subagent** rather than defining a custom research persona. `Explore` runs on Haiku, is denied write/edit tools, and is purpose-built for this pattern. Define a custom research subagent only when `Explore` doesn't fit (e.g. you need a domain-specific system prompt the model wouldn't infer).
+**On Claude Code, use the built-in `Explore` subagent** for read-only research isolation. Its model follows current Claude Code model-selection behavior, so do not assume it always runs on Haiku. Define a custom research subagent only when `Explore` does not fit.
+
+---
+
+## Harness-specific notes
+
+The patterns above are universal. The following implementation details are not portable across harnesses:
+
+- Claude Code exposes plugin personas and Agent Teams.
+- Gemini CLI and Antigravity expose repository command adapters structurally, but runtime custom-agent support depends on the installed harness version.
+- OpenCode uses the project `viserys` primary agent and does not automatically activate root `agents/` personas in this repository.
+- OMP and Codex require their own skill/agent/plugin distribution mechanisms; do not infer support from Claude-specific frontmatter or Agent Teams behavior.
 
 ---
 
 ## Claude Code compatibility
 
-This catalog is harness-agnostic, but most readers will run it on Claude Code. Here's how each pattern maps onto Claude Code's primitives — and where the platform enforces our rules for us.
+This section maps the universal patterns onto Claude Code primitives and records platform-specific behavior.
 
 ### Where personas live
 
-Plugin subagents go in `agents/` at the plugin root. This repo is a plugin (`.claude-plugin/plugin.json`), so `agents/code-reviewer.md`, `agents/security-auditor.md`, and `agents/test-engineer.md` are auto-discovered when the plugin is enabled. No path configuration needed.
+Plugin subagents go in `agents/` at the plugin root. This repo is a plugin (`.claude-plugin/plugin.json`), so all seven persona files in `agents/` are auto-discovered when the plugin is enabled. No path configuration needed.
 
 ### Subagents vs. Agent Teams
 
@@ -134,18 +151,13 @@ Claude Code has two parallelism primitives. Pattern 3 (parallel fan-out with mer
 | Status | Stable | Experimental — requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` |
 | Cost | Lower | Higher — each teammate is a separate Claude instance |
 
-**The personas in this repo work in both modes.** When spawned as subagents (e.g. by `/ship`), they report findings to the main session. When spawned as teammates (`Spawn a teammate using the security-auditor agent type…`), they can challenge each other's findings directly. The persona definition is the same; only the spawning context changes.
+**The personas in this repo work in both modes.** Plugin subagents use scoped identifiers such as `viserys:maester`; teammate invocation should reference the scoped type exposed by the installed plugin. The persona definition is reused, while coordination capabilities depend on the running mode.
 
-One subtlety: the `skills` and `mcpServers` frontmatter fields in a persona are honored when it runs as a subagent but **ignored when it runs as a teammate** — teammates load skills and MCP servers from your project and user settings, the same as a regular session. If a persona depends on a specific skill or MCP server being loaded, configure it at the session level so it's available in both modes.
+Plugin persona fields are constrained by Claude Code's plugin-agent rules: `hooks`, `mcpServers`, and `permissionMode` are ignored for plugin subagents. Agent Teams behavior varies by display mode and version, so configure required skills and MCP access at session level unless the active Claude documentation explicitly guarantees teammate-level support.
 
 ### Platform-enforced rules
 
-Two rules in this catalog aren't just convention — Claude Code enforces them:
-
-- **"Subagents cannot spawn other subagents"** (verbatim from the docs). Anti-pattern B (persona-calls-persona) and Anti-pattern D (deep persona trees) cannot exist on Claude Code by construction.
-- **"No nested teams"** — teammates cannot spawn their own teams. Same anti-patterns blocked at the team level.
-
-This means you can adopt the patterns in this catalog without worrying about contributors accidentally building the anti-patterns. They'll just fail to load.
+Claude Code may support bounded nested delegation depending on version and depth limits, but Viserys still forbids persona-to-persona delegation as an architectural rule. Agent Teams also have their own nesting and coordination constraints. Do not rely on platform rejection to enforce Viserys boundaries; keep orchestration flat in command prompts and validators.
 
 ### Built-in subagents to know about
 
@@ -157,13 +169,13 @@ Before defining a custom subagent, check whether one of these covers the role:
 | `Plan` | Read-only research during plan mode. |
 | `general-purpose` | Multi-step tasks needing both exploration and modification. |
 
-Don't redefine these. Layer your specialist personas (code-reviewer, security-auditor, test-engineer) on top of them.
+Viserys uses `strategist` as its canonical full-planning persona while the harness built-in `Plan` remains available as a platform primitive. Layer the other specialist personas on top of built-in capabilities instead of redefining generic exploration or execution agents.
 
 ### Frontmatter restrictions for plugin agents
 
 Plugin subagents do **not** support the `hooks`, `mcpServers`, or `permissionMode` frontmatter fields — these are silently ignored. If a future persona needs any of those, the user must copy the file into `.claude/agents/` or `~/.claude/agents/` instead.
 
-The fields that DO work in plugin agents are: `name`, `description`, `tools`, `disallowedTools`, `model`, `maxTurns`, `skills`, `memory`, `background`, `effort`, `isolation`, `color`, `initialPrompt`. Use `model` per-persona if you want to optimize cost (e.g. Haiku for `test-engineer` coverage scans, Sonnet for `code-reviewer`, Opus for `security-auditor`).
+The fields that DO work in plugin agents are: `name`, `description`, `tools`, `disallowedTools`, `model`, `maxTurns`, `skills`, `memory`, `background`, `effort`, `isolation`, `color`, `initialPrompt`. Use `model` per-persona if you want to optimize cost (e.g. Haiku for `prover` coverage scans, Sonnet for `maester`, Opus for `kingsguard`).
 
 ### Spawning multiple subagents in parallel
 
@@ -225,11 +237,11 @@ week's release. No errors in logs.
 Create an agent team to debug this with competing hypotheses. Spawn
 three teammates using the existing agent types:
 
-  - code-reviewer  — investigate race conditions and blocking calls
-                     in the checkout code path
-  - security-auditor — investigate auth checks, session handling,
-                       and any synchronous network calls added recently
-  - test-engineer  — propose tests that would distinguish between the
+  - viserys:maester  — investigate race conditions and blocking calls
+                        in the checkout code path
+  - viserys:kingsguard — investigate auth checks, session handling,
+                          and any synchronous network calls added recently
+  - viserys:prover  — propose tests that would distinguish between the
                      hypotheses and check coverage gaps in checkout
 
 Have them message each other directly to challenge each other's
@@ -244,21 +256,15 @@ The lead spawns three teammates referencing the existing persona names. The pers
 1. Each teammate runs in its own context window, exploring the codebase from its own lens.
 2. Teammates use `message` to send findings to each other directly. The lead doesn't have to relay.
 3. The shared task list shows who's investigating what — visible at any time with `Ctrl+T` (in-process mode) or in a tmux pane (split mode).
-4. When `code-reviewer` finds a `Promise.all` that should be sequential, it messages `security-auditor` to confirm the auth call isn't part of the race. `security-auditor` checks and replies — either confirming the race is the real issue or producing counter-evidence.
-5. `test-engineer` proposes a focused integration test for whichever theory is winning, which the team uses to verify before declaring consensus.
+4. When `maester` finds a `Promise.all` that should be sequential, it messages `kingsguard` to confirm the auth call isn't part of the race. `kingsguard` checks and replies — either confirming the race is the real issue or producing counter-evidence.
+5. `prover` proposes a focused integration test for whichever theory is winning, which the team uses to verify before declaring consensus.
 6. The lead synthesizes the converged finding and presents it to you.
 
 You can interrupt at any teammate by cycling with `Shift+Down` and typing — useful for redirecting an investigator who's gone down a wrong path.
 
-### When to clean up
+### Team lifecycle
 
-When the investigation lands on a root cause, tell the lead:
-
-```
-Clean up the team
-```
-
-Always cleanup through the lead, not a teammate (per the docs: teammates lack full team context for cleanup).
+Follow the active Claude Code Agent Teams lifecycle. Current versions may clean team state automatically when the session ends; use explicit cleanup only when the running version exposes or requires it.
 
 ### Cost expectation
 
@@ -286,7 +292,7 @@ Reach for Agent Teams only when teammates **need** to challenge each other to pr
 A persona whose job is to decide which other persona to call.
 
 ```
-/work → router-persona → "this needs a review" → code-reviewer → router (paraphrases) → user
+/work → router-persona → "this needs a review" → maester → router (paraphrases) → user
 ```
 
 **Why it fails:**
@@ -301,7 +307,7 @@ A persona whose job is to decide which other persona to call.
 
 ### B. Persona that calls another persona
 
-A `code-reviewer` that internally invokes `security-auditor` when it sees auth code.
+A `maester` that internally invokes `kingsguard` when it sees auth code.
 
 **Why it fails:**
 - Personas were designed to produce a single perspective; chaining them defeats that
@@ -329,7 +335,7 @@ An agent that calls `/spec`, then `/plan`, then `/build`, etc. on the user's beh
 
 ### D. Deep persona trees
 
-`/ship` calls a `pre-ship-coordinator` that calls a `quality-coordinator` that calls `code-reviewer`.
+`/ship` calls a `pre-ship-coordinator` that calls a `quality-coordinator` that calls `maester`.
 
 **Why it fails:**
 - Each layer adds latency and tokens with no decision value

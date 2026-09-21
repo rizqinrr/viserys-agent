@@ -1,7 +1,7 @@
 description = "Break work into small verifiable tasks with acceptance criteria and dependency ordering"
 
 prompt = """
-Invoke the planning-and-task-breakdown skill.
+Invoke the planning-and-task-breakdown skill. If a `strategist` custom subagent has been registered in the active Gemini environment, call it with the spec plus relevant codebase context. Otherwise apply agents/strategist.md in the main context and label the result as degraded single-context planning. `strategist` is the canonical planner for Viserys; keep the pass read-only and return its executable plan for human review.
 
 Read the existing spec (SPEC.md or equivalent) and the relevant codebase sections. Then:
 
