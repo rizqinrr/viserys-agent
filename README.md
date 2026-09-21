@@ -210,4 +210,6 @@ Butuh bantuan, ingin berdiskusi, atau berbagi pengalaman memakai Viserys? [Join 
 
 ## License
 
-Viserys menggunakan lisensi repository yang berlaku. Materi `get-design` mengadaptasi guidance Impeccable dan menyertakan atribusi serta salinan lisensi upstream di [`NOTICE.md`](NOTICE.md) dan [`LICENSES/Apache-2.0-Impeccable.txt`](LICENSES/Apache-2.0-Impeccable.txt).
+Viserys dilisensikan di bawah [Apache License 2.0](LICENSE). Copyright 2026 rizqinrr.
+
+Materi `get-design` mengadaptasi guidance Apache-2.0 dari Impeccable; atribusi upstream dipertahankan pada file adaptasi yang relevan.

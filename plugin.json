@@ -1,5 +1,6 @@
 {
   "name": "viserys",
   "version": "0.1.0",
-  "description": "Engineering workflow skills for AI coding agents."
+  "description": "Engineering workflow skills for AI coding agents.",
+  "license": "Apache-2.0"
 }

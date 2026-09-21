@@ -8,6 +8,7 @@
   },
   "homepage": "https://github.com/rizqinrr/viserys-agent",
   "repository": "https://github.com/rizqinrr/viserys-agent",
+  "license": "Apache-2.0",
   "skills": "./skills/",
   "interface": {
     "displayName": "Viserys",

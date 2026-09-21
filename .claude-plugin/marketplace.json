@@ -16,6 +16,7 @@
       },
       "description": "Engineering workflow skills covering every phase of software development: spec, plan, build, verify, review, and ship.",
       "homepage": "https://github.com/rizqinrr/viserys-agent",
+      "license": "Apache-2.0",
       "keywords": ["skills", "agents", "engineering", "spec", "tdd", "review", "ship"]
     }
   ]
