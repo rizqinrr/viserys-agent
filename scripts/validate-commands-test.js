@@ -1,0 +1,191 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const { afterEach, test } = require('node:test');
+
+const VALIDATOR = path.join(__dirname, 'validate-commands.js');
+const sandboxes = [];
+
+function makeSandbox() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'viserys-validate-commands-test-'));
+  const scriptsDir = path.join(root, 'scripts');
+  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.copyFileSync(VALIDATOR, path.join(scriptsDir, 'validate-commands.js'));
+  sandboxes.push(root);
+  return root;
+}
+
+function writeFile(root, relativePath, content) {
+  const file = path.join(root, relativePath);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, content);
+}
+
+function writeClaudeCommand(root, stem, descriptionLine) {
+  writeFile(
+    root,
+    path.join('.claude', 'commands', `${stem}.md`),
+    `---\n${descriptionLine}\n---\n\n# Command\n`,
+  );
+}
+
+function writeTomlCommand(root, directory, stem, descriptionLine) {
+  writeFile(root, path.join(directory, `${stem}.toml`), `${descriptionLine}\nprompt = "Run command"\n`);
+}
+
+function writeOpenCodeCommand(root, stem, descriptionLine) {
+  writeFile(
+    root,
+    path.join('.opencode', 'command', `${stem}.md`),
+    `---\n${descriptionLine}\n---\n\n# Command\n`,
+  );
+}
+
+function writeMatchingCommands(root, stem, description) {
+  writeClaudeCommand(root, stem, `description: ${description}`);
+  writeTomlCommand(root, path.join('.gemini', 'commands'), stem, `description = "${description}"`);
+  writeTomlCommand(root, 'commands', stem, `description = "${description}"`);
+}
+
+function run(root) {
+  return spawnSync(process.execPath, [path.join(root, 'scripts', 'validate-commands.js')], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+}
+
+afterEach(() => {
+  for (const root of sandboxes.splice(0)) {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('passes matching command twins across every adapter', () => {
+  const root = makeSandbox();
+  const description = 'Break work into ordered tasks';
+  writeClaudeCommand(root, 'get-tasks', `description: ${description}`);
+  writeTomlCommand(root, path.join('.gemini', 'commands'), 'get-tasks', `description = '${description}'`);
+  writeTomlCommand(root, 'commands', 'get-tasks', `description = '${description}'`);
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /✓  get-tasks/);
+  assert.match(result.stdout, /1 commands checked — 0 error\(s\) — PASSED/);
+});
+
+test('fails when a Claude command is missing a TOML twin', () => {
+  const root = makeSandbox();
+  const description = 'Review a change';
+  writeClaudeCommand(root, 'review', `description: ${description}`);
+  writeTomlCommand(root, path.join('.gemini', 'commands'), 'review', `description = "${description}"`);
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /review — missing in: commands/);
+  assert.match(result.stdout, /1 commands checked — 1 error\(s\) — FAILED/);
+});
+
+test('fails when a TOML command has no Claude twin', () => {
+  const root = makeSandbox();
+  writeTomlCommand(root, path.join('.gemini', 'commands'), 'deploy', 'description = "Deploy a change"');
+  writeTomlCommand(root, 'commands', 'deploy', 'description = "Deploy a change"');
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /deploy — present in toml dirs but missing in \.claude\/commands/);
+  assert.match(result.stdout, /1 commands checked — 1 error\(s\) — FAILED/);
+});
+
+test('reports all descriptions when command twins drift', () => {
+  const root = makeSandbox();
+  writeClaudeCommand(root, 'review', 'description: Review a change');
+  writeTomlCommand(root, path.join('.gemini', 'commands'), 'review', 'description = "Inspect a change"');
+  writeTomlCommand(root, 'commands', 'review', 'description = "Audit a change"');
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /\.claude:\s+Review a change/);
+  assert.match(result.stdout, /\.gemini:\s+Inspect a change/);
+  assert.match(result.stdout, /commands\/:\s+Audit a change/);
+});
+
+test('fails with an actionable error for a malformed description', () => {
+  const root = makeSandbox();
+  writeMatchingCommands(root, 'review', 'Review a change');
+  writeFile(
+    root,
+    path.join('.gemini', 'commands', 'review.toml'),
+    'prompt = "Missing description"\n',
+  );
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /\.gemini\/commands\/review — missing or malformed description/);
+  assert.match(result.stdout, /1 commands checked — 1 error\(s\) — FAILED/);
+});
+
+test('accepts an optional OpenCode adapter with matching description', () => {
+  const root = makeSandbox();
+  const description = 'Design product-specific interfaces';
+  writeMatchingCommands(root, 'get-design', description);
+  writeOpenCodeCommand(root, 'get-design', `description: ${description}`);
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /✓  get-design/);
+});
+
+test('fails when an OpenCode adapter has no Claude twin', () => {
+  const root = makeSandbox();
+  writeOpenCodeCommand(root, 'get-design', 'description: Design product-specific interfaces');
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /get-design — present in \.opencode\/command but missing in \.claude\/commands/);
+});
+
+test('fails when an OpenCode adapter description drifts', () => {
+  const root = makeSandbox();
+  writeMatchingCommands(root, 'get-design', 'Design product-specific interfaces');
+  writeOpenCodeCommand(root, 'get-design', 'description: Audit generic interfaces');
+
+  const result = run(root);
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout, /\.opencode:\s+Audit generic interfaces/);
+});
+
+test('parses escaped quotes in double-quoted TOML descriptions', () => {
+  const root = makeSandbox();
+  writeClaudeCommand(root, 'review', 'description: Review "important" changes');
+  writeTomlCommand(
+    root,
+    path.join('.gemini', 'commands'),
+    'review',
+    'description = "Review \\"important\\" changes"',
+  );
+  writeTomlCommand(
+    root,
+    'commands',
+    'review',
+    'description = "Review \\"important\\" changes"',
+  );
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /1 commands checked — 0 error\(s\) — PASSED/);
+});

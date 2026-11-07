@@ -1,0 +1,77 @@
+description = "Run the pre-launch checklist via parallel fan-out to specialist personas, then synthesize a go/no-go decision"
+
+prompt = """
+Invoke the shipping-and-launch skill.
+
+`/ship` is a fan-out orchestrator. Run four core specialist personas in parallel against the current change, add `artisan` when the change affects a web-facing interface, then merge their reports into a go/no-go decision with a rollback plan.
+
+## Phase A — Determine the fan-out
+
+Always include:
+1. `maester` — five-axis review: correctness, readability, architecture, security, and performance.
+2. `kingsguard` — vulnerability and threat-model pass covering OWASP, secrets, auth/authz, and dependency CVEs.
+3. `prover` — test coverage analysis across happy paths, edge cases, error paths, and concurrency.
+4. `chronicler` — documentation readiness across public contracts, README, ADRs, changelog, compatibility, and migration notes.
+
+Also include `artisan` when the change touches browser routes, UI components, CSS, design-system tokens, frontend accessibility, or responsive behavior. In `/ship`, `artisan` is review-only.
+
+## Phase B — Parallel fan-out
+
+If the Viserys custom subagents have been registered in the active Gemini environment, issue all selected subagent calls in a single assistant turn so they execute concurrently. Root `agents/` files are source prompts and are not automatically Gemini tools in a plain checkout.
+
+If subagents are unavailable, apply each persona prompt from `agents/` separately in the main context, mark the process as degraded single-context review, and preserve independent passes before merging.
+
+Constraints:
+- Subagents return only their report to the main session.
+- Personas do not delegate to other personas.
+- Keep orchestration flat; the main session performs the merge.
+- Use Agent Teams only when investigators must challenge each other, as documented in `references/orchestration-patterns.md`.
+
+Persona resolution: user or project definitions for `maester`, `kingsguard`, `prover`, `chronicler`, or `artisan` take precedence over this plugin's versions.
+
+## Phase C — Merge in main context
+
+1. Code Quality — aggregate Critical/Required findings from `maester` and failing tests, lint, typecheck, or build output.
+2. Security — promote Critical/High `kingsguard` findings to launch blockers; remove duplicates with `maester`.
+3. Testing — treat missing proof for core behavior from `prover` as a release-readiness gap.
+4. Documentation — promote required public-contract, migration, or operational documentation from `chronicler`.
+5. UI and Accessibility — when `artisan` ran, include required visual, responsive, and accessibility findings.
+6. Performance — use source concerns from `maester`; use `/webperf` and `racer` for dedicated measured web-performance auditing.
+7. Infrastructure — verify env vars, migrations, monitoring, feature flags, and rollback prerequisites directly.
+
+## Phase D — Decision and rollback
+
+Produce:
+
+```markdown
+## Ship Decision: GO | NO-GO
+
+### Blockers (must fix before ship)
+- [Source persona: Critical/High finding + file:line]
+
+### Recommended fixes (should fix before ship)
+- [Source persona: Required/Medium finding + file:line]
+
+### Acknowledged risks (shipping anyway)
+- [Risk + mitigation]
+
+### Rollback plan
+- Trigger conditions: [signals that prompt rollback]
+- Rollback procedure: [exact steps]
+- Recovery time objective: [target]
+
+### Specialist reports (full)
+- [maester report]
+- [kingsguard report]
+- [prover report]
+- [chronicler report]
+- [artisan report, when applicable]
+```
+
+Rules:
+1. Run all selected personas concurrently when parallel calls are available.
+2. Personas do not call each other; the main agent merges output.
+3. A rollback plan is mandatory before GO.
+4. Any Critical finding defaults to NO-GO unless the user explicitly accepts the risk.
+5. All four core personas run for every `/ship` invocation. Only `artisan` is conditional on UI/web scope.
+"""
