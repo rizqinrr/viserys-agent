@@ -240,68 +240,51 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   }
 
-  // 3. THEME TOGGLE: OBSIDIAN DARK & CITADEL LIGHT (R-21, R-34)
+  // 3. THEME TOGGLE (ICON ONLY): OBSIDIAN DARK & CITADEL LIGHT (R-21, R-34)
   const themeToggle = document.getElementById('theme-toggle');
-  const themeLabel = document.getElementById('theme-label');
+  const themeIconMoon = document.getElementById('theme-icon-moon');
+  const themeIconSun = document.getElementById('theme-icon-sun');
   const rootHtml = document.documentElement;
 
-  const savedTheme = localStorage.getItem('viserys-theme');
-  if (savedTheme === 'light' || savedTheme === 'dark') {
-    rootHtml.setAttribute('data-theme', savedTheme);
-    if (themeLabel) {
-      themeLabel.textContent = savedTheme === 'dark' ? 'Obsidian' : 'Citadel';
+  function applyTheme(theme) {
+    rootHtml.setAttribute('data-theme', theme);
+    if (themeIconMoon && themeIconSun) {
+      themeIconMoon.hidden = (theme === 'light');
+      themeIconSun.hidden = (theme === 'dark');
     }
   }
+
+  const savedTheme = localStorage.getItem('viserys-theme') || 'dark';
+  applyTheme(savedTheme);
 
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
       const current = rootHtml.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
       const next = current === 'dark' ? 'light' : 'dark';
-      rootHtml.setAttribute('data-theme', next);
+      applyTheme(next);
       localStorage.setItem('viserys-theme', next);
-      if (themeLabel) {
-        themeLabel.textContent = next === 'dark' ? 'Obsidian' : 'Citadel';
-      }
     });
   }
 
-  // 4. HERO CLI COMMAND BUILDER & CLIPBOARD COPY
-  const cliChips = document.querySelectorAll('.cli-chip');
-  const installCmd = document.getElementById('install-cmd');
-  const cliDeliverablePreview = document.getElementById('cli-deliverable-preview');
-  const copyBtn = document.getElementById('copy-btn');
-  const copyText = document.getElementById('copy-text');
+  // 4. CLIPBOARD COPY UTILITY (ICON ONLY STATE TOGGLE)
+  async function copyToClipboard(text, buttonEl) {
+    const defIcon = buttonEl.querySelector('.icon-copy-default');
+    const checkIcon = buttonEl.querySelector('.icon-copy-check');
 
-  const DELIVERABLE_MAP = {
-    '': 'docs/PRD.md, tasks/*.md, docs/design.md',
-    ' --skill get-prd': 'docs/PRD.md (Spesifikasi & Entitas Data)',
-    ' --skill get-tasks': 'tasks/<feature>/plan.md & task-*.md',
-    ' --skill get-design': 'docs/design.md (Token & Sistem UI)'
-  };
-
-  cliChips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      cliChips.forEach((c) => c.classList.remove('active'));
-      chip.classList.add('active');
-      const arg = chip.getAttribute('data-skill-arg') || '';
-      if (installCmd) {
-        installCmd.textContent = `npx skills add rizqinrr/viserys-agent${arg}`;
-      }
-      if (cliDeliverablePreview) {
-        cliDeliverablePreview.textContent = DELIVERABLE_MAP[arg] || DELIVERABLE_MAP[''];
-      }
-    });
-  });
-
-  async function copyToClipboard(text, buttonEl, labelEl, defaultLabel) {
-    try {
-      await navigator.clipboard.writeText(text);
+    function showSuccess() {
       buttonEl.classList.add('copied');
-      if (labelEl) labelEl.textContent = 'Tersalin!';
+      if (defIcon) defIcon.hidden = true;
+      if (checkIcon) checkIcon.hidden = false;
       setTimeout(() => {
         buttonEl.classList.remove('copied');
-        if (labelEl) labelEl.textContent = defaultLabel;
-      }, 1800);
+        if (defIcon) defIcon.hidden = false;
+        if (checkIcon) checkIcon.hidden = true;
+      }, 1600);
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      showSuccess();
     } catch {
       const textarea = document.createElement('textarea');
       textarea.value = text;
@@ -309,16 +292,16 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
       textarea.select();
       document.execCommand('copy');
       document.body.removeChild(textarea);
-      if (labelEl) labelEl.textContent = 'Tersalin!';
-      setTimeout(() => {
-        if (labelEl) labelEl.textContent = defaultLabel;
-      }, 1800);
+      showSuccess();
     }
   }
 
+  const copyBtn = document.getElementById('copy-btn');
+  const installCmd = document.getElementById('install-cmd');
+
   if (copyBtn && installCmd) {
     copyBtn.addEventListener('click', () => {
-      copyToClipboard(installCmd.textContent.trim(), copyBtn, copyText, 'Salin Perintah');
+      copyToClipboard(installCmd.textContent.trim(), copyBtn);
     });
   }
 
@@ -346,7 +329,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   });
 
-  // 6. BENTO CELL 2: 7 SMALL COUNCIL PERSONAS SELECTOR
+  // 6. BENTO CELL 2: 7 SPECIALIST PERSONAS SELECTOR
   const councilItems = document.querySelectorAll('.council-item');
   const mandateFile = document.getElementById('mandate-file');
   const mandateDesc = document.getElementById('mandate-desc');
@@ -399,7 +382,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     isStreamPaused = false;
     if (pauseStreamBtn) {
       pauseStreamBtn.hidden = true;
-      pauseStreamBtn.textContent = 'Jeda Animasi';
+      pauseStreamBtn.textContent = 'Jeda';
     }
   }
 
@@ -460,7 +443,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
       if (wbViewEmpty) wbViewEmpty.hidden = true;
       if (wbViewError) wbViewError.hidden = false;
       if (wbStatusDot) wbStatusDot.className = 'status-indicator-dot is-error';
-      if (wbStatusText) wbStatusText.textContent = 'Eksekusi ditahan oleh gerbang validasi (Error State).';
+      if (wbStatusText) wbStatusText.textContent = 'Eksekusi ditahan oleh gerbang verifikasi (Error State).';
       return;
     }
 
@@ -521,7 +504,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
   if (pauseStreamBtn) {
     pauseStreamBtn.addEventListener('click', () => {
       isStreamPaused = !isStreamPaused;
-      pauseStreamBtn.textContent = isStreamPaused ? 'Lanjutkan Animasi' : 'Jeda Animasi';
+      pauseStreamBtn.textContent = isStreamPaused ? 'Lanjutkan' : 'Jeda';
       if (wbStatusText) {
         wbStatusText.textContent = isStreamPaused
           ? 'Penulisan artefak dijeda oleh pengguna.'
@@ -559,7 +542,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
   if (copyArtifactBtn) {
     copyArtifactBtn.addEventListener('click', () => {
       const code = WORKBENCH_STAGES[currentStage]?.code || '';
-      copyToClipboard(code, copyArtifactBtn, copyArtifactBtn, 'Salin Markdown');
+      copyToClipboard(code, copyArtifactBtn);
     });
   }
 
@@ -587,13 +570,12 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   });
 
-  // 9. GSAP + SCROLLTRIGGER CHOREOGRAPHY (PARALLAX, SPLIT TEXT, BENTO REVEAL, MAGNETIC BUTTONS)
+  // 9. GSAP + SCROLLTRIGGER CHOREOGRAPHY
   if (typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined') {
     const gsap = window.gsap;
     const ScrollTrigger = window.ScrollTrigger;
     gsap.registerPlugin(ScrollTrigger);
 
-    // Helper: Split text into words/chars while keeping screen-reader accessibility
     function splitTextNodes() {
       document.querySelectorAll('[data-split]').forEach((el) => {
         if (el.dataset.splitDone === 'true') return;
@@ -634,7 +616,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     mm.add('(prefers-reduced-motion: no-preference)', () => {
       splitTextNodes();
 
-      // Effect 1: Parallax Scrolling on King Viserys Iron Throne Hero Image
+      // Effect 1: Parallax Scrolling on Hero Image
       const heroImg = document.getElementById('hero-parallax-img');
       if (heroImg) {
         gsap.fromTo(
@@ -654,7 +636,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
         );
       }
 
-      // Effect 2: Split Text Reveal (Character-by-Character on Hero, Word-by-Word on Section Titles)
+      // Effect 2: Split Text Reveal (Chars on Hero, Words on Section Titles)
       const heroChars = document.querySelectorAll('.hero-headline .split-char');
       if (heroChars.length > 0) {
         gsap.fromTo(
@@ -667,7 +649,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
             duration: 0.75,
             stagger: 0.018,
             ease: 'power3.out',
-             delay: 0.1
+            delay: 0.1
           }
         );
       }

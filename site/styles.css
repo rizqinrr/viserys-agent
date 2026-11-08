@@ -19,13 +19,13 @@
   --status-ok: #34d399;
   --hero-scrim: linear-gradient(
     95deg,
-     rgba(10, 11, 14, 0.94) 0%,
-    rgba(10, 11, 14, 0.84) 48%,
-    rgba(10, 11, 14, 0.58) 100%
+    rgba(10, 11, 14, 0.72) 0%,
+    rgba(10, 11, 14, 0.45) 50%,
+    rgba(10, 11, 14, 0.2) 100%
   ), linear-gradient(
     180deg,
-    rgba(10, 11, 14, 0.35) 0%,
-    rgba(10, 11, 14, 0.96) 100%
+    rgba(10, 11, 14, 0.15) 0%,
+    rgba(10, 11, 14, 0.85) 100%
   );
   --shadow-elevated: 0 20px 44px rgba(0, 0, 0, 0.55);
 }
@@ -48,13 +48,13 @@
   --status-ok: #047857;
   --hero-scrim: linear-gradient(
     95deg,
-    rgba(246, 243, 236, 0.95) 0%,
-    rgba(246, 243, 236, 0.86) 52%,
-    rgba(246, 243, 236, 0.65) 100%
+    rgba(246, 243, 236, 0.82) 0%,
+    rgba(246, 243, 236, 0.5) 50%,
+    rgba(246, 243, 236, 0.25) 100%
   ), linear-gradient(
     180deg,
-    rgba(246, 243, 236, 0.3) 0%,
-    rgba(246, 243, 236, 0.98) 100%
+    rgba(246, 243, 236, 0.15) 0%,
+    rgba(246, 243, 236, 0.9) 100%
   );
   --shadow-elevated: 0 18px 36px rgba(24, 22, 19, 0.12);
 }
@@ -192,16 +192,16 @@ img {
 .mobile-menu-btn {
   display: none;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   min-height: 44px;
-  padding: 0.5rem 0.9rem;
+  padding: 0;
   background: var(--bg-surface);
   color: var(--text-primary);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sharp);
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 600;
 }
 
 .primary-nav {
@@ -239,36 +239,43 @@ img {
   margin-left: 0.5rem;
 }
 
-.theme-toggle {
+/* Pure Icon Button (Theme Toggle, Copy, GitHub) */
+.icon-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   min-height: 44px;
-  padding: 0.5rem 0.85rem;
+  padding: 0;
   background: var(--bg-surface);
   color: var(--text-primary);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sharp);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
 }
 
-.theme-toggle:hover {
+.icon-btn:hover {
   border-color: var(--accent-gold);
   background: var(--bg-elevated);
+  color: var(--accent-gold);
 }
 
-.theme-toggle:active {
-  transform: translateY(1px);
+.icon-btn:active {
+  transform: scale(0.95);
 }
 
-/* Buttons */
+.icon-btn.copied {
+  border-color: var(--status-ok);
+  color: var(--status-ok);
+}
+
+/* Primary and Secondary CTA Buttons */
 .btn-primary,
 .btn-secondary,
 .btn-outline,
-.btn-copy,
 .btn-small {
   display: inline-flex;
   align-items: center;
@@ -370,15 +377,6 @@ img {
   align-items: center;
 }
 
-.lore-kicker {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--accent-gold);
-  margin-bottom: 1rem;
-}
-
 .hero-headline {
   font-family: var(--font-display);
   font-size: clamp(2.15rem, 4.4vw, 3.65rem);
@@ -413,13 +411,20 @@ img {
   will-change: transform, opacity;
 }
 
-/* Interactive CLI Card */
+/* Hero How-to-Install Card with Transparency */
 .hero-cli-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-strong);
+  background: rgba(18, 20, 26, 0.62);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(70, 76, 94, 0.45);
   border-radius: var(--radius-panel);
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   box-shadow: var(--shadow-elevated);
+}
+
+[data-theme="light"] .hero-cli-card {
+  background: rgba(236, 231, 220, 0.72);
+  border-color: rgba(140, 130, 115, 0.45);
 }
 
 .cli-card-header {
@@ -448,42 +453,11 @@ img {
   border-radius: var(--radius-sharp);
 }
 
-.cli-filter-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.cli-chip {
-  min-height: 44px;
-  padding: 0.45rem 0.8rem;
-  background: var(--bg-canvas);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-sharp);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  transition: all 0.15s ease;
-}
-
-.cli-chip:hover {
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-}
-
-.cli-chip.active {
-  background: var(--accent-gold-tint);
-  color: var(--accent-gold);
-  border-color: var(--accent-gold);
-  font-weight: 600;
-}
-
 .cli-command-box {
   background: var(--bg-code);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-card);
-  padding: 0.9rem 1rem;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -508,42 +482,52 @@ img {
 }
 
 .btn-copy {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border-strong);
-  padding: 0.5rem 0.9rem;
-  font-size: 0.8rem;
-  white-space: nowrap;
   flex-shrink: 0;
 }
 
-.btn-copy:hover {
-  border-color: var(--accent-gold);
-}
-
-.btn-copy.copied {
-  border-color: var(--status-ok);
-  color: var(--status-ok);
-}
-
-.cli-meta-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+.cli-flow-summary {
   border-top: 1px solid var(--border-hairline);
   padding-top: 0.95rem;
 }
 
-.cli-meta-item dt {
+.cli-flow-label {
+  display: block;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.2rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
 }
 
-.cli-meta-item dd {
+.cli-flow-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cli-flow-steps li {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.cli-flow-steps li code {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--text-primary);
+  background: var(--bg-code);
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-sharp);
+  border: 1px solid var(--border-hairline);
+  white-space: nowrap;
+}
+
+.cli-flow-steps li span {
+  color: var(--text-secondary);
 }
 
 /* SECTION HEADINGS */
@@ -582,7 +566,7 @@ img {
   color: var(--text-secondary);
 }
 
-/* SECTION 2: THE KING'S DECREE LEDGER */
+/* SECTION 2: PROBLEM VS SOLUTION LEDGER */
 .ledger-comparison {
   display: grid;
   grid-template-columns: 1fr 1.15fr;
@@ -1184,7 +1168,7 @@ img {
 }
 
 /* Empty & Error States inside Workbench (R-27) */
-.wb-state-Screen {
+.wb-state-screen {
   padding: 3.5rem 1.5rem;
   text-align: center;
 }
@@ -1436,7 +1420,7 @@ img {
     margin-left: 0;
     padding-top: 0.5rem;
     border-top: 1px solid var(--border-hairline);
-    justify-content: space-between;
+    justify-content: flex-start;
   }
 
   .ledger-comparison {
@@ -1449,7 +1433,6 @@ img {
 
   .pillar-selector,
   .workbench-tabs,
-  .cli-meta-grid,
   .metrics-row {
     grid-template-columns: 1fr;
   }
@@ -1460,8 +1443,8 @@ img {
   }
 
   .cli-command-box {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
   }
 }
 

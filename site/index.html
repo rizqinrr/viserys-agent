@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Viserys: Engineering Discipline for AI Coding Agents</title>
-  <meta name="description" content="Engineering workflow pack untuk AI coding agents. Ubah ide mentah menjadi docs/PRD.md, vertical task slices, dan spesifikasi desain anti-slop.">
+  <title>Viserys: Engineering Workflow Pack untuk AI Coding Agents</title>
+  <meta name="description" content="Engineering workflow pack untuk AI coding agents. Ubah ide fitur menjadi docs/PRD.md, vertical task slices, dan spesifikasi desain anti-slop.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,57 +14,46 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <!--
-    Design Read (antislop Part 3):
-    Reading this as: Developer workflow pack showcase for software engineers, in a Valyrian Iron & Targaryen Gold editorial-technical style, dial ENERGY 3 / RHYTHM 3 / MOTION 3.
-
-    R-37 Owner Override Record:
-    - Owner explicitly requested King Viserys (House of the Dragon) hero image (WebP HD), Parallax Scrolling, Split Text Reveal, Bento Grid Staggered Reveal (R-05 override with content-driven cell sizes), and Magnetic Buttons under MOTION 3.
-
-    R-31 One-Line Decision Reasons:
-    - Palette: Valyrian Obsidian (#0A0B0E), Forged Iron (#12141A), and Targaryen Crown Gold (#E5B85B) are sampled directly from the King Viserys Iron Throne photograph to unify brand lore and developer terminal clarity.
-    - Typography: Cinzel conveys regal Targaryen inscription authority on primary headings, Plus Jakarta Sans keeps long Indonesian/English explanations effortless to scan, and JetBrains Mono distinguishes executable CLI commands and Markdown file paths.
-    - Layout: Four distinct compositions (Layered Parallax Hero, 2-Column Contrast Ledger, 12-Column Asymmetric Bento Architecture Grid, and Split Interactive Artifact Workbench) match RHYTHM 3.
-    - Motion: Parallax establishes spatial depth in the throne room, Split Text Reveal paces section entry, Bento Stagger groups architectural modules, and Magnetic Buttons reinforce primary click affordances.
-  -->
-
   <a href="#main-content" class="skip-link">Langsung ke konten utama</a>
 
   <!-- Top Navigation -->
   <header class="site-header" id="top">
     <div class="container header-inner">
       <a href="#top" class="brand-mark" aria-label="Viserys Beranda">
-        <svg class="brand-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M3 19H21M5 16L3 7L8.5 11.5L12 4L15.5 11.5L21 7L19 16H5Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+        <svg class="brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2L3 7L12 12L21 7L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M3 12L12 17L21 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 17L12 22L21 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <span class="brand-title">VISERYS</span>
         <span class="version-tag">0.1.0</span>
       </a>
 
-      <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-expanded="false" aria-controls="primary-nav">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 7H20M4 12H20M4 17H20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-expanded="false" aria-controls="primary-nav" aria-label="Buka menu navigasi">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 7H20M4 12H20M4 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
-        <span>Menu</span>
       </button>
 
       <nav class="primary-nav" id="primary-nav" aria-label="Navigasi Utama">
-        <a href="#decree" class="nav-link">Filosofi</a>
-        <a href="#bento-architecture" class="nav-link">Arsitektur Bento</a>
-        <a href="#workbench" class="nav-link">Simulasi Artifact</a>
-        <a href="#adapters" class="nav-link">Kompatibilitas</a>
+        <a href="#why-viserys" class="nav-link">Masalah &amp; Solusi</a>
+        <a href="#bento-architecture" class="nav-link">Arsitektur</a>
+        <a href="#workbench" class="nav-link">Simulasi Alur</a>
+        <a href="#adapters" class="nav-link">Agent</a>
         <div class="header-actions">
-          <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Ganti tema gelap atau terang">
-            <svg class="icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+          <button type="button" class="icon-btn magnetic-btn" id="theme-toggle" data-strength="14" aria-label="Ganti tema gelap atau terang" title="Ganti tema">
+            <svg class="icon-moon" id="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
             </svg>
-            <span id="theme-label">Obsidian</span>
+            <svg class="icon-sun" id="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
           </button>
-          <a href="https://github.com/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer" class="btn-outline magnetic-btn" data-strength="18">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <a href="https://github.com/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer" class="icon-btn magnetic-btn" data-strength="14" aria-label="Buka GitHub Repository" title="GitHub Repository">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
             </svg>
-            <span>GitHub Repo</span>
           </a>
         </div>
       </nav>
@@ -77,7 +66,7 @@
       <div class="hero-parallax-wrap" aria-hidden="true">
         <img
           src="assets/viserys-throne.webp"
-          alt="Raja Viserys I Targaryen berdiri di depan Iron Throne memegang pedang Valyrian Blackfyre"
+          alt=""
           width="1920"
           height="1080"
           fetchpriority="high"
@@ -89,34 +78,26 @@
 
       <div class="container hero-grid">
         <div class="hero-copy-block">
-          <p class="lore-kicker">TERINSPIRASI DARI RAJA VISERYS I TARGARYEN (HOUSE OF THE DRAGON)</p>
-          <h1 class="hero-headline" data-split="chars">Tahta Kendali untuk AI Coding Agents.</h1>
+          <h1 class="hero-headline" data-split="chars">Engineering Workflow Pack untuk AI Coding Agents.</h1>
           <p class="hero-lead">
-            Tanpa hukum dan protokol, AI coding agent bergerak liar: menebak kebutuhan, mencampur skema database, dan merakit antarmuka generik. Viserys menanamkan disiplin rekayasa senior melalui tiga alur kerja terstruktur sebelum satu baris kode pun ditulis.
+            Ubah ide fitur menjadi spesifikasi PRD, pecahan task vertikal, dan sistem desain terukur sebelum agent mulai menulis kode.
           </p>
 
           <div class="hero-cta-row">
-            <a href="#workbench" class="btn-primary magnetic-btn" data-strength="26">
-              <span>Jalankan Simulasi Interaktif</span>
+            <a href="#workbench" class="btn-primary magnetic-btn" data-strength="24">
+              <span>Lihat Simulasi Alur</span>
             </a>
-            <a href="https://skills.sh/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer" class="btn-secondary magnetic-btn" data-strength="20">
-              <span>Lihat di skills.sh Registry</span>
+            <a href="https://skills.sh/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer" class="btn-secondary magnetic-btn" data-strength="18">
+              <span>skills.sh Registry</span>
             </a>
           </div>
         </div>
 
-        <!-- Interactive CLI Command Builder -->
-        <div class="hero-cli-card" aria-label="Generator Perintah Instalasi">
+        <!-- Clean How-to-Install Glass Card -->
+        <div class="hero-cli-card" aria-label="Cara Instalasi">
           <div class="cli-card-header">
-            <span class="cli-card-label">UNIVERSAL INSTALLER (SKILLS.SH)</span>
-            <span class="cli-status-indicator">Ready</span>
-          </div>
-
-          <div class="cli-filter-group" role="group" aria-label="Pilih cakupan skill untuk diinstal">
-            <button type="button" class="cli-chip active" data-skill-arg="">Semua (3 Core Skills)</button>
-            <button type="button" class="cli-chip" data-skill-arg=" --skill get-prd">get-prd</button>
-            <button type="button" class="cli-chip" data-skill-arg=" --skill get-tasks">get-tasks</button>
-            <button type="button" class="cli-chip" data-skill-arg=" --skill get-design">get-design</button>
+            <span class="cli-card-label">HOW TO INSTALL</span>
+            <span class="cli-status-indicator">Universal CLI</span>
           </div>
 
           <div class="cli-command-box">
@@ -124,37 +105,37 @@
               <span class="cli-prompt" aria-hidden="true">$</span>
               <code id="install-cmd">npx skills add rizqinrr/viserys-agent</code>
             </div>
-            <button type="button" class="btn-copy magnetic-btn" id="copy-btn" data-strength="16" aria-label="Salin perintah instalasi ke clipboard">
-              <svg class="copy-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.75"/>
-                <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="1.75"/>
+            <button type="button" class="icon-btn btn-copy magnetic-btn" id="copy-btn" data-strength="14" aria-label="Salin perintah instalasi" title="Salin perintah">
+              <svg class="icon-copy-default" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="1.8"/>
               </svg>
-              <span class="copy-text" id="copy-text">Salin Perintah</span>
+              <svg class="icon-copy-check" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
+                <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </button>
           </div>
 
-          <dl class="cli-meta-grid">
-            <div class="cli-meta-item">
-              <dt>Target Deliverable</dt>
-              <dd id="cli-deliverable-preview">docs/PRD.md, tasks/*.md, docs/design.md</dd>
-            </div>
-            <div class="cli-meta-item">
-              <dt>Runtime Dependency</dt>
-              <dd>Zero (Pure Markdown + Node Validator)</dd>
-            </div>
-          </dl>
+          <div class="cli-flow-summary">
+            <span class="cli-flow-label">Alur Pakai 3 Core Skills:</span>
+            <ol class="cli-flow-steps">
+              <li><code>/get-prd</code> <span>Interview &amp; tulis <code>docs/PRD.md</code></span></li>
+              <li><code>/get-tasks</code> <span>Pecah jadi <code>tasks/&lt;fitur&gt;/plan.md</code></span></li>
+              <li><code>/get-design</code> <span>Kunci spesifikasi UI di <code>docs/design.md</code></span></li>
+            </ol>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 2: THE KING'S DECREE (ASYMMETRIC LEDGER) -->
-    <section class="decree-section" id="decree">
+    <!-- SECTION 2: PROBLEM VS SOLUTION -->
+    <section class="decree-section" id="why-viserys">
       <div class="container">
         <div class="section-intro">
-          <p class="section-index">01 / PROTOKOL VS IMPROVISASI</p>
-          <h2 class="section-title" data-split="words">Mengapa AI Agent Membutuhkan Hukum Besi</h2>
+          <p class="section-index">01 / MASALAH VS SOLUSI</p>
+          <h2 class="section-title" data-split="words">Mengapa Vibe Coding Gagal di Skala Produksi</h2>
           <p class="section-desc">
-            Seperti Raja Viserys yang menjaga perdamaian kerajaan melalui suksesi dan tatanan tertulis, proyek perangkat lunak membutuhkan artefak kebenaran tunggal agar subagent tidak berhalusinasi di tengah jalan.
+            Meminta AI langsung membuat fitur dari satu kalimat singkat sering berujung pada arsitektur yang salah arah. Viserys mengunci spesifikasi di dalam repositori sebelum implementasi dimulai.
           </p>
         </div>
 
@@ -162,14 +143,14 @@
           <article class="ledger-col ledger-chaos">
             <header class="ledger-header">
               <span class="ledger-tag tag-danger">Tanpa Viserys (Vibe Coding)</span>
-              <h3>Improvisasi Tanpa Kontrak</h3>
+              <h3>Eksekusi Tanpa Spesifikasi</h3>
             </header>
             <ul class="ledger-list">
               <li>
                 <strong>Asumsi buta pada prompt pertama:</strong> Agent langsung membuat puluhan file tanpa menanyakan siapa pengguna utama, batasan performa, atau aturan autentikasi.
               </li>
               <li>
-                <strong>Task monolitik yang gagal di tengah:</strong> Seluruh fitur dikerjakan dalam satu giliran raksasa. Saat terjadi error, agent menimpa file yang sudah benar.
+                <strong>Task monolitik yang merusak kode:</strong> Seluruh fitur dikerjakan dalam satu giliran besar. Saat terjadi error, agent menimpa file yang sudah benar.
               </li>
               <li>
                 <strong>Tampilan UI generik (AI Slop):</strong> Gradien ungu-biru tanpa alasan, kartu fitur seragam, tombol mati yang tidak berfungsi, dan kontras warna yang gagal dibaca.
@@ -179,18 +160,18 @@
 
           <article class="ledger-col ledger-order">
             <header class="ledger-header">
-              <span class="ledger-tag tag-gold">Disiplin Viserys</span>
-              <h3>Tiga Pilar Rekayasa Terukur</h3>
+              <span class="ledger-tag tag-gold">Dengan Viserys</span>
+              <h3>Alur Rekayasa 3 Tahap</h3>
             </header>
             <ul class="ledger-list">
               <li>
-                <strong>Wawancara Pohon Keputusan (<code>get-prd</code>):</strong> Menggali niat asli lewat 1 pertanyaan tajam per giliran hingga tingkat keyakinan mencapai 85%, lalu mengunci spesifikasi di <code>docs/PRD.md</code>.
+                <strong>Structured Interview (<code>get-prd</code>):</strong> Menggali niat asli lewat 1 pertanyaan terfokus per giliran hingga tingkat keyakinan mencapai 85%, lalu mengunci spesifikasi di <code>docs/PRD.md</code>.
               </li>
               <li>
-                <strong>Irisan Vertikal &amp; Gate TDD (<code>get-tasks</code>):</strong> Memecah PRD menjadi <code>tasks/&lt;feature&gt;/plan.md</code> dan <code>task-*.md</code> lengkap dengan urutan blokir dan perintah tes otomatis.
+                <strong>Vertical Task Slicing (<code>get-tasks</code>):</strong> Memecah PRD menjadi <code>tasks/&lt;feature&gt;/plan.md</code> dan <code>task-*.md</code> lengkap dengan urutan dependensi dan perintah tes TDD.
               </li>
               <li>
-                <strong>Spesifikasi Desain Anti-Slop (<code>get-design</code>):</strong> Menetapkan sistem token, tipografi berkarakter, state interaktif lengkap (kosong, muat, galat), dan kontras WCAG di <code>docs/design.md</code>.
+                <strong>Bespoke UI Specification (<code>get-design</code>):</strong> Menetapkan sistem token, tipografi, state interaktif lengkap (empty, loading, error), dan kontras WCAG di <code>docs/design.md</code>.
               </li>
             </ul>
           </article>
@@ -202,10 +183,10 @@
     <section class="bento-section" id="bento-architecture">
       <div class="container">
         <div class="section-intro">
-          <p class="section-index">02 / ARSITEKTUR EKOSISTEM</p>
-          <h2 class="section-title" data-split="words">Anatomi Paket Rekayasa Viserys</h2>
+          <p class="section-index">02 / ARSITEKTUR REPOSITORI</p>
+          <h2 class="section-title" data-split="words">Komponen Inti di Dalam Paket</h2>
           <p class="section-desc">
-            Setiap sel di bawah ini memetakan komponen nyata di dalam repositori Viserys: 3 alur kerja utama, 7 persona dewan spesialis, 7 daftar periksa bersama, dan validator deterministik.
+            Seluruh alur kerja dikemas dalam Markdown murni tanpa dependensi runtime: 3 core skills, 7 specialist personas, 7 shared checklists, dan validator deterministik.
           </p>
         </div>
 
@@ -214,11 +195,11 @@
           <article class="bento-cell bento-span-8">
             <div class="bento-cell-top">
               <span class="bento-coord">MODUL 01 / <code>skills/*/SKILL.md</code></span>
-              <span class="bento-pill">3 Core Workflows</span>
+              <span class="bento-pill">3 Core Skills</span>
             </div>
-            <h3>Rantai Alur Kerja 3 Pilar</h3>
+            <h3>Rantai Alur Kerja Utama</h3>
             <p class="bento-body-text">
-              Klik salah satu pilar di bawah untuk melihat bagaimana input pengguna diproses menjadi dokumen rekayasa permanen di dalam repositori Anda.
+              Klik salah satu skill untuk melihat kapan skill tersebut dipanggil, mekanisme kerjanya, dan file yang dihasilkan:
             </p>
 
             <div class="pillar-selector" role="tablist" aria-label="Pilih pilar alur kerja">
@@ -238,7 +219,7 @@
 
             <div class="pillar-detail-box" id="pillar-detail-box" aria-live="polite">
               <div class="pillar-detail-row">
-                <span class="detail-key">Kapan Dipanggil:</span>
+                <span class="detail-key">Kapan Dipakai:</span>
                 <span class="detail-val" id="pillar-when">Memulai aplikasi, sistem, atau fitur baru saat belum ada dokumen kebutuhan.</span>
               </div>
               <div class="pillar-detail-row">
@@ -246,21 +227,21 @@
                 <span class="detail-val" id="pillar-mech">Design-tree interview satu pertanyaan per giliran, hipotesis eksplisit, pemetaan entitas data, dan NFR.</span>
               </div>
               <div class="pillar-detail-row">
-                <span class="detail-key">Artefak Keluaran:</span>
+                <span class="detail-key">Deliverable:</span>
                 <code class="detail-code" id="pillar-out">docs/PRD.md</code>
               </div>
             </div>
           </article>
 
-          <!-- Bento Cell 2: Tall 4-col Small Council Personas -->
+          <!-- Bento Cell 2: Tall 4-col Specialist Personas -->
           <article class="bento-cell bento-span-4 bento-row-2">
             <div class="bento-cell-top">
               <span class="bento-coord">MODUL 02 / <code>agents/*.md</code></span>
               <span class="bento-pill">7 Personas</span>
             </div>
-            <h3>Dewan Kecil (7 Specialist Personas)</h3>
+            <h3>7 Specialist Personas</h3>
             <p class="bento-body-text">
-              Tujuh prompt spesialis yang dinamai dari struktur dewan kerajaan untuk mengaudit kode dari berbagai sudut pandang. Klik nama persona untuk membaca mandatnya:
+              Tujuh prompt spesialis untuk mengevaluasi rencana dan kode dari sudut pandang berbeda. Klik untuk melihat fokusnya:
             </p>
 
             <div class="council-list" role="listbox" aria-label="Daftar 7 Persona Spesialis">
@@ -304,18 +285,18 @@
           <article class="bento-cell bento-span-4">
             <div class="bento-cell-top">
               <span class="bento-coord">MODUL 03 / <code>references/*.md</code></span>
-              <span class="bento-pill">7 Shared Checklists</span>
+              <span class="bento-pill">7 Checklists</span>
             </div>
-            <h3>Daftar Periksa Rekayasa</h3>
+            <h3>Shared Checklists</h3>
             <p class="bento-body-text">
-              Ditarik sesuai kebutuhan oleh skill untuk menjaga standar produksi tanpa membebani konteks awal:
+              Daftar periksa yang dimuat sesuai kebutuhan oleh skill untuk menjaga standar produksi:
             </p>
             <ul class="checklist-tags">
               <li><code>definition-of-done.md</code></li>
               <li><code>security-checklist.md</code></li>
               <li><code>testing-checklist.md</code></li>
               <li><code>performance-checklist.md</code></li>
-              <li><code>subagent-Dispatch.md</code></li>
+              <li><code>subagent-dispatch.md</code></li>
               <li><code>routing.md</code></li>
               <li><code>anti-slop-gate.md</code></li>
             </ul>
@@ -327,9 +308,9 @@
               <span class="bento-coord">MODUL 04 / <code>scripts/ &amp; evals/</code></span>
               <span class="bento-pill">CI Verified</span>
             </div>
-            <h3>Gerbang Validasi Deterministik</h3>
+            <h3>Validator &amp; Trigger Evals</h3>
             <p class="bento-body-text">
-              Setiap perubahan diuji oleh validator Node.js lokal tanpa biaya token sebelum rilis:
+              Konsistensi struktur skill, path artefak, dan akurasi routing diuji otomatis dengan Node.js:
             </p>
             <div class="metrics-row">
               <div class="metric-box">
@@ -346,20 +327,20 @@
       </div>
     </section>
 
-    <!-- SECTION 4: INTERACTIVE WORKBENCH (WITH COMPLETE UI STATES PER R-27) -->
+    <!-- SECTION 4: INTERACTIVE WORKBENCH -->
     <section class="workbench-section" id="workbench">
       <div class="container">
         <div class="workbench-top-bar">
           <div>
-            <p class="section-index">03 / SIMULASI ARTEFAK NYATA</p>
-            <h2 class="section-title" data-split="words">Meja Kerja Interaktif Viserys</h2>
+            <p class="section-index">03 / SIMULASI ALUR KERJA</p>
+            <h2 class="section-title" data-split="words">Simulasi Dialog &amp; Deliverable</h2>
           </div>
 
-          <!-- UI State Switcher (Demonstrating Empty, Loading, Error, and Active States per R-27) -->
+          <!-- UI State Switcher (R-27) -->
           <div class="state-control-group" role="group" aria-label="Simulasikan state antarmuka">
-            <span class="state-group-label">State Tampilan:</span>
-            <button type="button" class="state-btn active" data-state="ready">Artefak Aktif</button>
-            <button type="button" class="state-btn" data-state="streaming">Simulasi Ketik</button>
+            <span class="state-group-label">Mode:</span>
+            <button type="button" class="state-btn active" data-state="ready">Hasil Akhir</button>
+            <button type="button" class="state-btn" data-state="streaming">Animasi Ketik</button>
             <button type="button" class="state-btn" data-state="empty">Empty State</button>
             <button type="button" class="state-btn" data-state="error">Error Gate</button>
           </div>
@@ -386,15 +367,22 @@
 
         <!-- Workbench Frame -->
         <div class="workbench-frame" id="wb-panel" role="tabpanel" aria-labelledby="tab-btn-prd">
-          <!-- Streaming Progress Bar & Pause Control (R-39 compliance) -->
           <div class="wb-status-bar">
             <div class="wb-status-left">
               <span class="status-indicator-dot" id="wb-status-dot"></span>
-              <span class="wb-status-text" id="wb-status-text">Artefak terverifikasi dan siap digunakan.</span>
+              <span class="wb-status-text" id="wb-status-text">Artefak docs/PRD.md terverifikasi dan siap digunakan.</span>
             </div>
             <div class="wb-status-actions">
-              <button type="button" class="btn-small" id="pause-stream-btn" hidden>Jeda Animasi</button>
-              <button type="button" class="btn-small magnetic-btn" id="copy-artifact-btn" data-strength="12">Salin Markdown</button>
+              <button type="button" class="btn-small" id="pause-stream-btn" hidden>Jeda</button>
+              <button type="button" class="icon-btn btn-copy magnetic-btn" id="copy-artifact-btn" data-strength="12" aria-label="Salin isi Markdown" title="Salin Markdown">
+                <svg class="icon-copy-default" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="1.8"/>
+                </svg>
+                <svg class="icon-copy-check" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
+                  <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -402,11 +390,10 @@
           <div class="wb-split" id="wb-view-ready">
             <div class="wb-col wb-dialogue-col">
               <div class="wb-col-header">
-                <span>ALUR INTERVIEW &amp; PENALARAN AGENT</span>
+                <span>DIALOG AGENT &amp; USER</span>
                 <span class="confidence-badge" id="wb-confidence">Confidence: 90%</span>
               </div>
               <div class="dialogue-list" id="wb-dialogue-list">
-                <!-- Populated dynamically and initialized with default PRD dialogue -->
                 <div class="dialogue-item role-user">
                   <span class="dialogue-speaker">Developer</span>
                   <p>Saya ingin membuat aplikasi pencatat stok gudang untuk kasir toko ritel kecil.</p>
@@ -426,14 +413,14 @@
                 </div>
                 <div class="dialogue-item role-agent">
                   <span class="dialogue-speaker">Viserys (get-prd)</span>
-                  <p>Keyakinan naik ke 90%. Mengunci entitas <code>Product</code>, <code>StockLedger</code>, serta syarat antrean lokal (offline queue) ke dalam <code>docs/PRD.md</code>.</p>
+                  <p>Keyakinan naik ke 90%. Mengunci entitas <code>Product</code>, <code>StockEntry</code>, serta syarat antrean lokal (offline queue) ke dalam <code>docs/PRD.md</code>.</p>
                 </div>
               </div>
             </div>
 
             <div class="wb-col wb-artifact-col">
               <div class="wb-col-header">
-                <span>ISI FILE KELUARAN</span>
+                <span>DELIVERABLE MARKDOWN</span>
                 <code id="wb-file-label">docs/PRD.md</code>
               </div>
               <pre class="artifact-code-block"><code id="wb-code-content"># PRD: Retail Counter Inventory Ledger
@@ -459,29 +446,29 @@ Kasir toko ritel kecil sering mengalami selisih stok fisik karena pencatatan bar
           </div>
 
           <!-- Empty State View (R-27) -->
-          <div class="wb-state-Screen" id="wb-view-empty" hidden>
+          <div class="wb-state-screen" id="wb-view-empty" hidden>
             <div class="state-box">
-              <p class="state-code">STATUS: BELUM ADA ARTEFAK (EMPTY STATE)</p>
-              <h3>Direktori Spesifikasi Masih Kosong</h3>
+              <p class="state-code">STATUS: EMPTY STATE</p>
+              <h3>Belum Ada Dokumen Spesifikasi</h3>
               <p>
-                Belum ada file <code>docs/PRD.md</code>, <code>tasks/*/plan.md</code>, atau <code>docs/design.md</code> di ruang kerja ini. Viserys menahan agent agar tidak menulis kode aplikasi sebelum dokumen spesifikasi dibuat.
+                Belum ada file <code>docs/PRD.md</code>, <code>tasks/*/plan.md</code>, atau <code>docs/design.md</code> di proyek ini. Jalankan <code>/get-prd</code> untuk memulai sesi interview kebutuhan.
               </p>
-              <button type="button" class="btn-primary" id="empty-start-btn">Mulai Interview get-prd Sekarang</button>
+              <button type="button" class="btn-primary" id="empty-start-btn">Jalankan Simulasi get-prd</button>
             </div>
           </div>
 
           <!-- Error Gate View (R-27) -->
-          <div class="wb-state-Screen" id="wb-view-error" hidden>
+          <div class="wb-state-screen" id="wb-view-error" hidden>
             <div class="state-box state-box-error">
-              <p class="state-code">GERBANG VALIDASI MENOLAK EKSEKUSI (ERROR STATE)</p>
-              <h3>Kriteria Verifikasi Belum Terpenuhi</h3>
+              <p class="state-code">STATUS: BLOCKED BY VERIFICATION GATE</p>
+              <h3>Kriteria Dependensi Belum Terpenuhi</h3>
               <p>
-                Validator mendeteksi bahwa <code>tasks/inventory/task-02.md</code> masih berstatus <strong>Blocked by Task 01 (Database Schema)</strong> dan belum memiliki skrip pengujian yang lulus.
+                Eksekusi <code>tasks/inventory/task-02.md</code> ditahan karena masih berstatus <strong>Blocked by Task 01 (Database Schema)</strong>.
               </p>
               <div class="error-remediation">
-                <code>Solusi: Selesaikan Task 01 terlebih dahulu atau klik tombol di bawah untuk memulihkan artefak yang valid.</code>
+                <code>Solusi: Selesaikan Task 01 terlebih dahulu atau pulihkan tampilan artefak.</code>
               </div>
-              <button type="button" class="btn-outline" id="error-recover-btn">Pulihkan Artefak Terverifikasi</button>
+              <button type="button" class="btn-outline" id="error-recover-btn">Kembali ke Artefak</button>
             </div>
           </div>
         </div>
@@ -492,10 +479,10 @@ Kasir toko ritel kecil sering mengalami selisih stok fisik karena pencatatan bar
     <section class="adapters-section" id="adapters">
       <div class="container">
         <div class="section-intro">
-          <p class="section-index">04 / INTEGRASI LINTAS HARNESS</p>
-          <h2 class="section-title" data-split="words">Satu Disiplin di Semua AI Coding Agent</h2>
+          <p class="section-index">04 / KOMPATIBILITAS AGENT</p>
+          <h2 class="section-title" data-split="words">Berjalan di Berbagai AI Coding Agent</h2>
           <p class="section-desc">
-            Pilih lingkungan kerja yang Anda gunakan untuk melihat lokasi adapter dan cara mengaktifkan Viserys tanpa terkunci pada satu vendor.
+            Pilih editor atau CLI yang Anda gunakan untuk melihat cara integrasi Viserys.
           </p>
         </div>
 
@@ -510,14 +497,14 @@ Kasir toko ritel kecil sering mengalami selisih stok fisik karena pencatatan bar
 
           <div class="adapter-detail-panel" id="adapter-detail-panel" aria-live="polite">
             <div class="adapter-detail-col">
-              <span class="adapter-label">Metode Integrasi</span>
+              <span class="adapter-label">Integrasi</span>
               <h3 id="adapter-title">Claude Code Plugin &amp; Slash Commands</h3>
               <p id="adapter-desc">
-                Mendukung penuh manifest plugin di <code>.claude-plugin/plugin.json</code>, lifecycle hooks, dan slash command langsung seperti <code>/get-prd</code>, <code>/get-tasks</code>, dan <code>/get-design</code>.
+                Mendukung manifest plugin di <code>.claude-plugin/plugin.json</code>, lifecycle hooks, dan slash command langsung seperti <code>/get-prd</code>, <code>/get-tasks</code>, dan <code>/get-design</code>.
               </p>
             </div>
             <div class="adapter-code-col">
-              <span class="adapter-label">Perintah Aktivasi</span>
+              <span class="adapter-label">Perintah Instalasi</span>
               <pre class="adapter-pre"><code id="adapter-cmd">npx skills add rizqinrr/viserys-agent --agent claude-code</code></pre>
             </div>
           </div>
@@ -530,15 +517,15 @@ Kasir toko ritel kecil sering mengalami selisih stok fisik karena pencatatan bar
   <footer class="site-footer">
     <div class="container footer-inner">
       <div class="footer-brand">
-        <p class="footer-title">VISERYS WORKFLOW PACK (v0.1.0)</p>
+        <p class="footer-title">VISERYS v0.1.0</p>
         <p class="footer-copy">
-          Dilisensikan di bawah <a href="https://github.com/rizqinrr/viserys-agent/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">Apache License 2.0</a>. Ilustrasi karakter Raja Viserys I Targaryen merujuk pada seri House of the Dragon (HBO) sebagai inspirasi penamaan proyek.
+          Dilisensikan di bawah <a href="https://github.com/rizqinrr/viserys-agent/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">Apache License 2.0</a>.
         </p>
       </div>
       <nav class="footer-links" aria-label="Tautan Eksternal">
-        <a href="https://github.com/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
-        <a href="https://skills.sh/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer">skills.sh Registry</a>
-        <a href="https://discord.gg/WR6rg5YAy" target="_blank" rel="noopener noreferrer">Komunitas Discord</a>
+        <a href="https://github.com/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://skills.sh/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer">skills.sh</a>
+        <a href="https://discord.gg/WR6rg5YAy" target="_blank" rel="noopener noreferrer">Discord</a>
       </nav>
     </div>
   </footer>
