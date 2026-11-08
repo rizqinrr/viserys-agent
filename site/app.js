@@ -249,8 +249,10 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
   function applyTheme(theme) {
     rootHtml.setAttribute('data-theme', theme);
     if (themeIconMoon && themeIconSun) {
-      themeIconMoon.hidden = (theme === 'light');
-      themeIconSun.hidden = (theme === 'dark');
+      // In light mode: show moon icon (to switch to dark)
+      // In dark mode: show sun icon (to switch to light)
+      themeIconMoon.hidden = (theme !== 'light');
+      themeIconSun.hidden = (theme !== 'dark');
     }
   }
 
@@ -551,6 +553,13 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
   const adapterTitle = document.getElementById('adapter-title');
   const adapterDesc = document.getElementById('adapter-desc');
   const adapterCmd = document.getElementById('adapter-cmd');
+  const copyAdapterBtn = document.getElementById('copy-adapter-btn');
+
+  if (copyAdapterBtn && adapterCmd) {
+    copyAdapterBtn.addEventListener('click', () => {
+      copyToClipboard(adapterCmd.textContent.trim(), copyAdapterBtn);
+    });
+  }
 
   adapterBtns.forEach((btn) => {
     btn.addEventListener('click', () => {

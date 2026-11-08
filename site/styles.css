@@ -77,6 +77,10 @@
   padding: 0;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 16px;
@@ -270,6 +274,40 @@ img {
 .icon-btn.copied {
   border-color: var(--status-ok);
   color: var(--status-ok);
+}
+
+/* Theme Toggle Icon Switching:
+   - In Dark mode: show Sun icon (click to switch to light)
+   - In Light mode: show Moon icon (click to switch to dark)
+*/
+[data-theme="dark"] #theme-icon-moon {
+  display: none !important;
+}
+[data-theme="dark"] #theme-icon-sun {
+  display: block !important;
+}
+[data-theme="light"] #theme-icon-moon {
+  display: block !important;
+}
+[data-theme="light"] #theme-icon-sun {
+  display: none !important;
+}
+
+/* Copy Button Icon Switching:
+   - Default: show copy icon, checkmark is strictly hidden
+   - Copied state: show checkmark, copy icon is hidden
+*/
+.btn-copy .icon-copy-default {
+  display: block !important;
+}
+.btn-copy .icon-copy-check {
+  display: none !important;
+}
+.btn-copy.copied .icon-copy-default {
+  display: none !important;
+}
+.btn-copy.copied .icon-copy-check {
+  display: block !important;
 }
 
 /* Primary and Secondary CTA Buttons */
@@ -1286,15 +1324,23 @@ img {
   color: var(--text-secondary);
 }
 
-.adapter-pre {
+.adapter-cmd-box {
   background: var(--bg-code);
-  color: #f4f2ed;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-card);
-  padding: 1rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.adapter-cmd-box code {
+  color: #f4f2ed;
   font-family: var(--font-mono);
   font-size: 0.85rem;
   overflow-x: auto;
+  white-space: nowrap;
 }
 
 /* FOOTER */
