@@ -51,23 +51,16 @@ export default function Demo(props: Partial<typeof settings>) {
       />
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-8 py-24 text-center">
         <div className="flex max-w-2xl flex-col items-center">
-          <motion.p
-            {...enter(0)}
-            className="text-muted-foreground border-border mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
-          >
-            <span aria-hidden="true" className="bg-primary size-1.5 rounded-full" />
-            {s.eyebrow}
-          </motion.p>
           <motion.h1
-            {...enter(0.08)}
+            {...enter(0)}
             className="text-foreground text-5xl font-semibold tracking-tight text-balance sm:text-6xl md:text-7xl"
           >
             {s.headline}
           </motion.h1>
-          <motion.p {...enter(0.16)} className="text-muted-foreground mt-6 max-w-xl text-base text-pretty sm:text-lg">
+          <motion.p {...enter(0.08)} className="text-muted-foreground mt-6 max-w-xl text-base text-pretty sm:text-lg">
             {s.subline}
           </motion.p>
-          <motion.div {...enter(0.24)} className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <motion.div {...enter(0.16)} className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#workbench"
               id="cta-primary"

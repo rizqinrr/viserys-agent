@@ -187,15 +187,6 @@ img {
   letter-spacing: 0.08em;
 }
 
-.version-tag {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--accent-gold);
-  border: 1px solid var(--border-strong);
-  padding: 0.1rem 0.5rem;
-  border-radius: var(--radius-pill);
-}
-
 .mobile-menu-btn {
   display: none;
   align-items: center;
@@ -455,30 +446,6 @@ img {
   align-items: center;
 }
 
-.hero-eyebrow-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.35rem;
-  padding: 0.3rem 0.85rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-strong);
-  background: var(--pill-secondary-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: var(--text-secondary);
-  font-size: 0.76rem;
-  font-weight: 500;
-}
-
-.eyebrow-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-pill);
-  background: var(--accent-gold);
-  box-shadow: 0 0 8px var(--accent-gold);
-}
-
 .hero-headline {
   font-family: var(--font-display);
   font-size: clamp(2.35rem, 5.4vw, 4.25rem);
@@ -543,15 +510,6 @@ img {
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.05em;
-}
-
-.cli-status-indicator {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--status-ok);
-  border: 1px solid var(--border-strong);
-  padding: 0.1rem 0.5rem;
-  border-radius: var(--radius-pill);
 }
 
 .cli-command-box {
@@ -697,26 +655,21 @@ img {
   border-bottom: 1px solid var(--border-hairline);
 }
 
-.ledger-tag {
-  display: inline-block;
+.ledger-label {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 0.2rem 0.65rem;
-  border-radius: var(--radius-pill);
-  margin-bottom: 0.65rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
 }
 
-.tag-danger {
-  background: var(--status-danger-bg);
+.ledger-label.text-danger {
   color: var(--status-danger);
-  border: 1px solid var(--status-danger);
 }
 
-.tag-gold {
-  background: var(--accent-gold-tint);
+.ledger-label.text-gold {
   color: var(--accent-gold);
-  border: 1px solid var(--accent-gold);
 }
 
 .ledger-header h3 {
@@ -798,15 +751,6 @@ img {
 
 .bento-coord code {
   color: var(--accent-gold);
-}
-
-.bento-pill {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  padding: 0.15rem 0.6rem;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-pill);
-  color: var(--text-primary);
 }
 
 .bento-cell h3 {
@@ -974,7 +918,7 @@ img {
 .checklist-tags li {
   background: var(--bg-canvas);
   border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sharp);
   padding: 0.28rem 0.65rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
