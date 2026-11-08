@@ -1,7 +1,226 @@
-// Viserys: Interactive Control Plane & GSAP Choreography
+// Viserys: Interactive Control Plane, 21st.dev SonarGrid Engine & GSAP Choreography
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. DATA DICTIONARIES FOR INTERACTIVE MODULES
+  // 1. 21st.dev SONAR GRID 2D CANVAS ENGINE (Ported 1:1 from sonar-grid.tsx & demo.tsx)
+  function initSonarGrid() {
+    const host = document.getElementById('hero');
+    const canvas = document.getElementById('sonar-grid-canvas');
+    if (!host || !canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const MAX_DPR = 2;
+    const TAU = Math.PI * 2;
+    const opts = {
+      spacing: 26,
+      dotRadius: 1.4,
+      baseOpacity: 0.28,
+      pingEvery: 2.4,
+      speed: 260,
+      ringWidth: 90,
+      amplitude: 2.2,
+      interactive: true,
+      maxRings: 6,
+      seedPing: true,
+      pingArea: [0.22, 0.18, 0.78, 0.82]
+    };
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let rings = [];
+    let width = 0;
+    let height = 0;
+    let raf = 0;
+    let timer = 0;
+    let visible = true;
+    let seeded = false;
+    let stroke = '';
+    let nextPing = performance.now() + opts.pingEvery * 1000;
+
+    const readColor = () => {
+      stroke = getComputedStyle(canvas).color || '#e5b85b';
+    };
+
+    const addRing = (x, y, born) => {
+      readColor();
+      rings.push({ x, y, born });
+      while (rings.length > opts.maxRings) rings.shift();
+    };
+
+    const draw = (now) => {
+      const lifetime = (Math.hypot(width, height) + opts.ringWidth) / opts.speed;
+      rings = rings.filter((r) => (now - r.born) / 1000 < lifetime);
+      const live = rings.map((r) => {
+        const age = (now - r.born) / 1000;
+        const radius = age * opts.speed;
+        return {
+          x: r.x,
+          y: r.y,
+          radius,
+          reach: radius + opts.ringWidth,
+          fade: 1 - age / lifetime
+        };
+      });
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = stroke;
+
+      const cols = Math.ceil(width / opts.spacing) + 1;
+      const rows = Math.ceil(height / opts.spacing) + 1;
+      const offsetX = (width - (cols - 1) * opts.spacing) / 2;
+      const offsetY = (height - (rows - 1) * opts.spacing) / 2;
+
+      // Pass 1: every resting dot in a single path and a single fill.
+      const hot = [];
+      ctx.globalAlpha = opts.baseOpacity;
+      ctx.beginPath();
+      for (let i = 0; i < cols; i++) {
+        const cx = offsetX + i * opts.spacing;
+        for (let j = 0; j < rows; j++) {
+          const cy = offsetY + j * opts.spacing;
+          let energy = 0;
+          for (let m = 0; m < live.length; m++) {
+            const r = live[m];
+            if (Math.abs(cx - r.x) > r.reach || Math.abs(cy - r.y) > r.reach) continue;
+            const dist = Math.abs(Math.hypot(cx - r.x, cy - r.y) - r.radius);
+            if (dist >= opts.ringWidth) continue;
+            const t = 1 - dist / opts.ringWidth;
+            const k = t * t * (3 - 2 * t) * r.fade; // smoothstep, fading with age
+            if (k > energy) energy = k;
+          }
+          if (energy < 0.01) {
+            ctx.moveTo(cx + opts.dotRadius, cy);
+            ctx.arc(cx, cy, opts.dotRadius, 0, TAU);
+          } else {
+            hot.push(cx, cy, energy);
+          }
+        }
+      }
+      ctx.fill();
+
+      // Pass 2: only the dots on a wavefront get their own alpha and radius.
+      for (let k = 0; k < hot.length; k += 3) {
+        const energy = hot[k + 2] || 0;
+        ctx.globalAlpha = opts.baseOpacity + (1 - opts.baseOpacity) * energy;
+        ctx.beginPath();
+        ctx.arc(hot[k] || 0, hot[k + 1] || 0, opts.dotRadius * (1 + opts.amplitude * energy), 0, TAU);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    const resize = () => {
+      const rect = host.getBoundingClientRect();
+      width = Math.max(1, Math.round(rect.width));
+      height = Math.max(1, Math.round(rect.height));
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (!seeded) {
+        seeded = true;
+        const [x0, y0, x1, y1] = opts.pingArea;
+        if (opts.seedPing && !reduceMotion.matches) {
+          addRing(
+            width * (x0 + (x1 - x0) * 0.68),
+            height * (y0 + (y1 - y0) * 0.34),
+            performance.now() - 500
+          );
+        }
+      }
+      draw(performance.now());
+    };
+
+    const scheduleIdle = (delay) => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => tick(performance.now()), Math.max(16, delay));
+    };
+
+    const tick = (now) => {
+      raf = 0;
+      if (!visible || document.hidden) return;
+      if (reduceMotion.matches) {
+        rings = [];
+        draw(now);
+        return;
+      }
+      if (opts.pingEvery > 0 && now >= nextPing) {
+        const [x0, y0, x1, y1] = opts.pingArea;
+        addRing(
+          width * (x0 + Math.random() * (x1 - x0)),
+          height * (y0 + Math.random() * (y1 - y0)),
+          now
+        );
+        nextPing = now + opts.pingEvery * 1000;
+      }
+      draw(now);
+      if (rings.length > 0) raf = requestAnimationFrame(tick);
+      else if (opts.pingEvery > 0) scheduleIdle(nextPing - now);
+    };
+
+    const wake = () => {
+      if (!raf) {
+        window.clearTimeout(timer);
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    const refresh = () => {
+      readColor();
+      nextPing = Math.min(nextPing, performance.now() + opts.pingEvery * 1000);
+      wake();
+    };
+
+    const onDown = (e) => {
+      if (!opts.interactive || reduceMotion.matches) return;
+      const rect = host.getBoundingClientRect();
+      addRing(e.clientX - rect.left, e.clientY - rect.top, performance.now());
+      wake();
+    };
+
+    const onVisibility = () => {
+      if (!document.hidden) wake();
+    };
+
+    readColor();
+    resize();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(resize);
+      ro.observe(host);
+    } else {
+      window.addEventListener('resize', resize);
+    }
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          visible = entry ? entry.isIntersecting : true;
+          if (visible) wake();
+        },
+        { threshold: 0 }
+      );
+      io.observe(host);
+    }
+
+    if (typeof MutationObserver !== 'undefined') {
+      const mo = new MutationObserver(refresh);
+      mo.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+      });
+    }
+
+    host.addEventListener('pointerdown', onDown);
+    document.addEventListener('visibilitychange', onVisibility);
+    if (reduceMotion.addEventListener) {
+      reduceMotion.addEventListener('change', wake);
+    }
+    wake();
+  }
+
+  initSonarGrid();
+
+  // 2. DATA DICTIONARIES FOR INTERACTIVE MODULES
   const PILLAR_DATA = {
     prd: {
       when: 'Memulai aplikasi, sistem, atau fitur baru saat belum ada dokumen kebutuhan.',
@@ -214,7 +433,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     }
   };
 
-  // 2. MOBILE NAVIGATION TOGGLE (R-03, R-26, R-32)
+  // 3. MOBILE NAVIGATION TOGGLE (R-03, R-26, R-32)
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const primaryNav = document.getElementById('primary-nav');
 
@@ -240,7 +459,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   }
 
-  // 3. THEME TOGGLE (ICON ONLY): OBSIDIAN DARK & CITADEL LIGHT (R-21, R-34)
+  // 4. THEME TOGGLE (ICON ONLY): OBSIDIAN DARK & CITADEL LIGHT (R-21, R-34)
   const themeToggle = document.getElementById('theme-toggle');
   const themeIconMoon = document.getElementById('theme-icon-moon');
   const themeIconSun = document.getElementById('theme-icon-sun');
@@ -249,8 +468,6 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
   function applyTheme(theme) {
     rootHtml.setAttribute('data-theme', theme);
     if (themeIconMoon && themeIconSun) {
-      // In light mode: show moon icon (to switch to dark)
-      // In dark mode: show sun icon (to switch to light)
       themeIconMoon.hidden = (theme !== 'light');
       themeIconSun.hidden = (theme !== 'dark');
     }
@@ -268,7 +485,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   }
 
-  // 4. CLIPBOARD COPY UTILITY (ICON ONLY STATE TOGGLE)
+  // 5. CLIPBOARD COPY UTILITY (ICON ONLY STATE TOGGLE)
   async function copyToClipboard(text, buttonEl) {
     const defIcon = buttonEl.querySelector('.icon-copy-default');
     const checkIcon = buttonEl.querySelector('.icon-copy-check');
@@ -307,7 +524,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   }
 
-  // 5. BENTO CELL 1: 3 CORE PILLARS SELECTOR
+  // 6. BENTO CELL 1: 3 CORE PILLARS SELECTOR
   const pillarBtns = document.querySelectorAll('.pillar-btn');
   const pillarWhen = document.getElementById('pillar-when');
   const pillarMech = document.getElementById('pillar-mech');
@@ -331,7 +548,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   });
 
-  // 6. BENTO CELL 2: 7 SPECIALIST PERSONAS SELECTOR
+  // 7. BENTO CELL 2: 7 SPECIALIST PERSONAS SELECTOR
   const councilItems = document.querySelectorAll('.council-item');
   const mandateFile = document.getElementById('mandate-file');
   const mandateDesc = document.getElementById('mandate-desc');
@@ -353,7 +570,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   });
 
-  // 7. INTERACTIVE WORKBENCH (STAGE TABS + UI STATES + STREAMING PAUSE)
+  // 8. INTERACTIVE WORKBENCH (STAGE TABS + UI STATES + STREAMING PAUSE)
   const wbTabs = document.querySelectorAll('.wb-tab');
   const stateBtns = document.querySelectorAll('.state-btn');
   const wbViewReady = document.getElementById('wb-view-ready');
@@ -548,7 +765,7 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   }
 
-  // 8. CROSS-HARNESS ADAPTER SWITCHER
+  // 9. CROSS-HARNESS ADAPTER SWITCHER
   const adapterBtns = document.querySelectorAll('.adapter-btn');
   const adapterTitle = document.getElementById('adapter-title');
   const adapterDesc = document.getElementById('adapter-desc');
@@ -579,60 +796,42 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
     });
   });
 
-  // 9. GSAP + SCROLLTRIGGER CHOREOGRAPHY
+  // 10. 21st.dev BLUR-UP MOTION & GSAP SCROLL CHOREOGRAPHY
   if (typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined') {
     const gsap = window.gsap;
     const ScrollTrigger = window.ScrollTrigger;
     gsap.registerPlugin(ScrollTrigger);
 
-    function splitTextNodes() {
-      document.querySelectorAll('[data-split]').forEach((el) => {
-        if (el.dataset.splitDone === 'true') return;
-        const mode = el.getAttribute('data-split');
-        const rawText = el.textContent.trim();
-        el.setAttribute('aria-label', rawText);
-        el.textContent = '';
-
-        const words = rawText.split(/\s+/);
-        words.forEach((word, wIdx) => {
-          const wordSpan = document.createElement('span');
-          wordSpan.className = 'split-word';
-          wordSpan.setAttribute('aria-hidden', 'true');
-
-          if (mode === 'chars') {
-            Array.from(word).forEach((ch) => {
-              const charSpan = document.createElement('span');
-              charSpan.className = 'split-char';
-              charSpan.textContent = ch;
-              wordSpan.appendChild(charSpan);
-            });
-          } else {
-            wordSpan.textContent = word;
-          }
-
-          el.appendChild(wordSpan);
-          if (wIdx < words.length - 1) {
-            el.appendChild(document.createTextNode(' '));
-          }
-        });
-
-        el.dataset.splitDone = 'true';
-      });
-    }
-
     const mm = gsap.matchMedia();
 
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      splitTextNodes();
+      // Hero Blur-Fade Entrance (matching demo.tsx: opacity 0->1, y 14->0, blur(6px)->blur(0px), duration 0.6s, staggered delays)
+      const heroEnterItems = document.querySelectorAll('[data-hero-enter]');
+      heroEnterItems.forEach((el) => {
+        const delay = parseFloat(el.getAttribute('data-hero-enter') || '0');
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 14, filter: 'blur(6px)' },
+          {
+            opacity: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 0.6,
+            delay,
+            ease: 'power3.out',
+            clearProps: 'filter'
+          }
+        );
+      });
 
-      // Effect 1: Parallax Scrolling on Hero Image
+      // Subtle Parallax on Hero Background Photo
       const heroImg = document.getElementById('hero-parallax-img');
       if (heroImg) {
         gsap.fromTo(
           heroImg,
-          { yPercent: -6, scale: 1.1 },
+          { yPercent: -5, scale: 1.08 },
           {
-            yPercent: 18,
+            yPercent: 14,
             scale: 1.0,
             ease: 'none',
             scrollTrigger: {
@@ -645,98 +844,83 @@ Task 01 (Database Schema & IndexedDB Store Initialization)`
         );
       }
 
-      // Effect 2: Split Text Reveal (Chars on Hero, Words on Section Titles)
-      const heroChars = document.querySelectorAll('.hero-headline .split-char');
-      if (heroChars.length > 0) {
+      // Section Headings Blur-Fade Reveal
+      document.querySelectorAll('[data-blur-reveal]').forEach((heading) => {
         gsap.fromTo(
-          heroChars,
-          { yPercent: 105, opacity: 0, rotateX: -40 },
+          heading,
+          { opacity: 0, y: 14, filter: 'blur(6px)' },
           {
-            yPercent: 0,
             opacity: 1,
-            rotateX: 0,
-            duration: 0.75,
-            stagger: 0.018,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 0.6,
             ease: 'power3.out',
-            delay: 0.1
+            clearProps: 'filter',
+            scrollTrigger: {
+              trigger: heading,
+              start: 'top 88%',
+              toggleActions: 'play none none none'
+            }
           }
         );
-      }
-
-      document.querySelectorAll('.section-title[data-split="words"]').forEach((heading) => {
-        const words = heading.querySelectorAll('.split-word');
-        if (words.length > 0) {
-          gsap.fromTo(
-            words,
-            { y: 28, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.65,
-              stagger: 0.06,
-              ease: 'power3.out',
-              scrollTrigger: {
-                trigger: heading,
-                start: 'top 86%',
-                toggleActions: 'play none none none'
-              }
-            }
-          );
-        }
       });
 
-      // Effect 3: Bento Grid Staggered Reveal
+      // Bento Grid Staggered Blur-Fade Reveal
       const bentoCells = gsap.utils.toArray('.bento-cell');
       if (bentoCells.length > 0) {
-        gsap.set(bentoCells, { y: 40, opacity: 0 });
+        gsap.set(bentoCells, { y: 20, opacity: 0, filter: 'blur(5px)' });
         ScrollTrigger.batch(bentoCells, {
           start: 'top 88%',
           onEnter: (batch) => {
             gsap.to(batch, {
               y: 0,
               opacity: 1,
-              duration: 0.75,
-              stagger: 0.12,
+              filter: 'blur(0px)',
+              duration: 0.65,
+              stagger: 0.1,
               ease: 'power3.out',
+              clearProps: 'filter',
               overwrite: true
             });
           }
         });
       }
 
-      // Ledger Comparison Cards Reveal
+      // Ledger Comparison Cards Blur-Fade Reveal
       const ledgerCols = gsap.utils.toArray('.ledger-col');
       if (ledgerCols.length > 0) {
         gsap.fromTo(
           ledgerCols,
-          { y: 32, opacity: 0 },
+          { y: 20, opacity: 0, filter: 'blur(5px)' },
           {
             y: 0,
             opacity: 1,
-            duration: 0.7,
-            stagger: 0.14,
+            filter: 'blur(0px)',
+            duration: 0.65,
+            stagger: 0.12,
             ease: 'power3.out',
+            clearProps: 'filter',
             scrollTrigger: {
               trigger: '.ledger-comparison',
-              start: 'top 85%'
+              start: 'top 86%'
             }
           }
         );
       }
 
-      // Effect 4: Magnetic Buttons with Elastic Spring Physics
+      // Magnetic Icon Buttons
       const magneticBtns = document.querySelectorAll('.magnetic-btn');
       magneticBtns.forEach((btn) => {
-        const strength = parseFloat(btn.getAttribute('data-strength') || '20');
-        const xTo = gsap.quickTo(btn, 'x', { duration: 0.45, ease: 'elastic.out(1, 0.35)' });
-        const yTo = gsap.quickTo(btn, 'y', { duration: 0.45, ease: 'elastic.out(1, 0.35)' });
+        const strength = parseFloat(btn.getAttribute('data-strength') || '16');
+        const xTo = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'elastic.out(1, 0.4)' });
+        const yTo = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'elastic.out(1, 0.4)' });
 
         btn.addEventListener('mousemove', (e) => {
           const rect = btn.getBoundingClientRect();
           const relX = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
           const relY = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-          xTo(relX * (strength * 0.45));
-          yTo(relY * (strength * 0.45));
+          xTo(relX * (strength * 0.4));
+          yTo(relY * (strength * 0.4));
         });
 
         btn.addEventListener('mouseleave', () => {

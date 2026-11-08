@@ -7,7 +7,7 @@
   <meta name="description" content="Engineering workflow pack untuk AI coding agents. Ubah ide fitur menjadi docs/PRD.md, vertical task slices, dan spesifikasi desain anti-slop.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="vendor/gsap.min.js" defer></script>
   <script src="vendor/ScrollTrigger.min.js" defer></script>
@@ -20,7 +20,7 @@
   <header class="site-header" id="top">
     <div class="container header-inner">
       <a href="#top" class="brand-mark" aria-label="Viserys Beranda">
-        <svg class="brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg class="brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M12 2L3 7L12 12L21 7L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
           <path d="M3 12L12 17L21 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M3 17L12 22L21 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -61,8 +61,13 @@
   </header>
 
   <main id="main-content">
-    <!-- SECTION 1: PARALLAX HERO -->
-    <section class="hero-section" id="hero">
+    <!-- SECTION 1: SONAR GRID HERO (21st.dev SonarGrid + Background Photo) -->
+    <section
+      class="hero-section sonar-grid-host"
+      id="hero"
+      data-slot="sonar-grid"
+    >
+      <!-- Layer 1: Existing Photo Background with subtle scrim -->
       <div class="hero-parallax-wrap" aria-hidden="true">
         <img
           src="assets/viserys-throne.webp"
@@ -76,53 +81,88 @@
         <div class="hero-scrim"></div>
       </div>
 
-      <div class="container hero-grid">
-        <div class="hero-copy-block">
-          <h1 class="hero-headline" data-split="chars">Engineering Workflow Pack untuk AI Coding Agents.</h1>
-          <p class="hero-lead">
+      <!-- Layer 2: Interactive 2D SonarGrid Dot Field Canvas -->
+      <canvas
+        id="sonar-grid-canvas"
+        class="sonar-grid-canvas"
+        aria-hidden="true"
+      ></canvas>
+
+      <!-- Layer 3: Soft Radial Wash Behind Copy (keeps text crisp while sonar rings pass underneath) -->
+      <div
+        class="hero-radial-wash"
+        aria-hidden="true"
+      ></div>
+
+      <!-- Layer 4: Centered Balanced Hero Content (21st.dev Demo Layout + Blur-Up Entrance) -->
+      <div class="hero-center-container">
+        <div class="hero-center-inner">
+          <p class="hero-eyebrow-pill" data-hero-enter="0">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>v0.1.0 Public Release · Klik di mana saja untuk memicu ping</span>
+          </p>
+
+          <h1 class="hero-headline" data-hero-enter="0.08">
+            Engineering Workflow Pack untuk AI Coding Agents.
+          </h1>
+
+          <p class="hero-lead" data-hero-enter="0.16">
             Ubah ide fitur menjadi spesifikasi PRD, pecahan task vertikal, dan sistem desain terukur sebelum agent mulai menulis kode.
           </p>
 
-          <div class="hero-cta-row">
-            <a href="#workbench" class="btn-primary magnetic-btn" data-strength="24">
+          <div class="hero-cta-row" data-hero-enter="0.24">
+            <a
+              href="#workbench"
+              id="cta-primary"
+              data-slot="cta-primary"
+              class="btn-pill-primary"
+            >
               <span>Lihat Simulasi Alur</span>
+              <svg class="cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </a>
-            <a href="https://skills.sh/rizqinrr/viserys-agent" target="_blank" rel="noopener noreferrer" class="btn-secondary magnetic-btn" data-strength="18">
+            <a
+              href="https://skills.sh/rizqinrr/viserys-agent"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-slot="cta-secondary"
+              class="btn-pill-secondary"
+            >
               <span>skills.sh Registry</span>
             </a>
           </div>
-        </div>
 
-        <!-- Clean How-to-Install Glass Card -->
-        <div class="hero-cli-card" aria-label="Cara Instalasi">
-          <div class="cli-card-header">
-            <span class="cli-card-label">HOW TO INSTALL</span>
-            <span class="cli-status-indicator">Universal CLI</span>
-          </div>
-
-          <div class="cli-command-box">
-            <div class="cli-code-scroll">
-              <span class="cli-prompt" aria-hidden="true">$</span>
-              <code id="install-cmd">npx skills add rizqinrr/viserys-agent</code>
+          <!-- Clean Frosted Glass How-to-Install Card -->
+          <div class="hero-cli-card" data-hero-enter="0.32" aria-label="Cara Instalasi">
+            <div class="cli-card-header">
+              <span class="cli-card-label">HOW TO INSTALL</span>
+              <span class="cli-status-indicator">Universal CLI</span>
             </div>
-            <button type="button" class="icon-btn btn-copy magnetic-btn" id="copy-btn" data-strength="14" aria-label="Salin perintah instalasi" title="Salin perintah">
-              <svg class="icon-copy-default" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="1.8"/>
-              </svg>
-              <svg class="icon-copy-check" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
-                <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
 
-          <div class="cli-flow-summary">
-            <span class="cli-flow-label">Alur Pakai 3 Core Skills:</span>
-            <ol class="cli-flow-steps">
-              <li><code>/get-prd</code> <span>Interview &amp; tulis <code>docs/PRD.md</code></span></li>
-              <li><code>/get-tasks</code> <span>Pecah jadi <code>tasks/&lt;fitur&gt;/plan.md</code></span></li>
-              <li><code>/get-design</code> <span>Kunci spesifikasi UI di <code>docs/design.md</code></span></li>
-            </ol>
+            <div class="cli-command-box">
+              <div class="cli-code-scroll">
+                <span class="cli-prompt" aria-hidden="true">$</span>
+                <code id="install-cmd">npx skills add rizqinrr/viserys-agent</code>
+              </div>
+              <button type="button" class="icon-btn btn-copy magnetic-btn" id="copy-btn" data-strength="14" aria-label="Salin perintah instalasi" title="Salin perintah">
+                <svg class="icon-copy-default" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="1.8"/>
+                </svg>
+                <svg class="icon-copy-check" width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
+                  <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="cli-flow-summary">
+              <ol class="cli-flow-steps">
+                <li><code>/get-prd</code> <span>Interview &amp; tulis <code>docs/PRD.md</code></span></li>
+                <li><code>/get-tasks</code> <span>Pecah jadi <code>tasks/&lt;fitur&gt;/plan.md</code></span></li>
+                <li><code>/get-design</code> <span>Kunci UI di <code>docs/design.md</code></span></li>
+              </ol>
+            </div>
           </div>
         </div>
       </div>
@@ -133,7 +173,7 @@
       <div class="container">
         <div class="section-intro">
           <p class="section-index">01 / MASALAH VS SOLUSI</p>
-          <h2 class="section-title" data-split="words">Mengapa Vibe Coding Gagal di Skala Produksi</h2>
+          <h2 class="section-title" data-blur-reveal>Mengapa Vibe Coding Gagal di Skala Produksi</h2>
           <p class="section-desc">
             Meminta AI langsung membuat fitur dari satu kalimat singkat sering berujung pada arsitektur yang salah arah. Viserys mengunci spesifikasi di dalam repositori sebelum implementasi dimulai.
           </p>
@@ -179,12 +219,12 @@
       </div>
     </section>
 
-    <!-- SECTION 3: BENTO GRID ARCHITECTURE (STAGGERED REVEAL) -->
+    <!-- SECTION 3: BENTO GRID ARCHITECTURE -->
     <section class="bento-section" id="bento-architecture">
       <div class="container">
         <div class="section-intro">
           <p class="section-index">02 / ARSITEKTUR REPOSITORI</p>
-          <h2 class="section-title" data-split="words">Komponen Inti di Dalam Paket</h2>
+          <h2 class="section-title" data-blur-reveal>Komponen Inti di Dalam Paket</h2>
           <p class="section-desc">
             Seluruh alur kerja dikemas dalam Markdown murni tanpa dependensi runtime: 3 core skills, 7 specialist personas, 7 shared checklists, dan validator deterministik.
           </p>
@@ -333,7 +373,7 @@
         <div class="workbench-top-bar">
           <div>
             <p class="section-index">03 / SIMULASI ALUR KERJA</p>
-            <h2 class="section-title" data-split="words">Simulasi Dialog &amp; Deliverable</h2>
+            <h2 class="section-title" data-blur-reveal>Simulasi Dialog &amp; Deliverable</h2>
           </div>
 
           <!-- UI State Switcher (R-27) -->
@@ -453,7 +493,7 @@ Kasir toko ritel kecil sering mengalami selisih stok fisik karena pencatatan bar
               <p>
                 Belum ada file <code>docs/PRD.md</code>, <code>tasks/*/plan.md</code>, atau <code>docs/design.md</code> di proyek ini. Jalankan <code>/get-prd</code> untuk memulai sesi interview kebutuhan.
               </p>
-              <button type="button" class="btn-primary" id="empty-start-btn">Jalankan Simulasi get-prd</button>
+              <button type="button" class="btn-pill-primary" id="empty-start-btn">Jalankan Simulasi get-prd</button>
             </div>
           </div>
 
@@ -468,7 +508,7 @@ Kasir toko ritel kecil sering mengalami selisih stok fisik karena pencatatan bar
               <div class="error-remediation">
                 <code>Solusi: Selesaikan Task 01 terlebih dahulu atau pulihkan tampilan artefak.</code>
               </div>
-              <button type="button" class="btn-outline" id="error-recover-btn">Kembali ke Artefak</button>
+              <button type="button" class="btn-pill-secondary" id="error-recover-btn">Kembali ke Artefak</button>
             </div>
           </div>
         </div>
@@ -480,7 +520,7 @@ Kasir toko ritel kecil sering mengalami selisih stok fisik karena pencatatan bar
       <div class="container">
         <div class="section-intro">
           <p class="section-index">04 / KOMPATIBILITAS AGENT</p>
-          <h2 class="section-title" data-split="words">Berjalan di Berbagai AI Coding Agent</h2>
+          <h2 class="section-title" data-blur-reveal>Berjalan di Berbagai AI Coding Agent</h2>
           <p class="section-desc">
             Pilih editor atau CLI yang Anda gunakan untuk melihat cara integrasi Viserys.
           </p>
@@ -512,7 +552,7 @@ Kasir toko ritel kecil sering mengalami selisih stok fisik karena pencatatan bar
                     <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/>
                     <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="1.8"/>
                   </svg>
-                  <svg class="icon-copy-check" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <svg class="icon-copy-check" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
                     <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </button>
