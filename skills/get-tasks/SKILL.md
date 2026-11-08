@@ -78,7 +78,7 @@ Use this skill when:
 8. Write and verify     -> files on disk, todos synced, validators green
 ```
 
-**Planning is read-only.** Phases 0 through 7 produce documents and questions, not code. Do not create, edit, or delete any source file during those phases. Writing task files under `tasks/` is the only filesystem change allowed before the user approves. If you find yourself fixing a bug or adding a function while breaking down work, stop: that is Phase 8 territory, or it is `incremental-implementation` territory, and it belongs to a task you have not written yet.
+**Planning is read-only.** Phases 0 through 7 produce documents and questions, not code. Do not create, edit, or delete any source file during those phases. Writing task files under `tasks/` is the only filesystem change allowed before the user approves. If you find yourself fixing a bug or adding a function while breaking down work, stop: that belongs to post-approval implementation, and it belongs to a task you have not written yet.
 
 
 ---
@@ -489,8 +489,9 @@ Write the approved files.
 
 `get-tasks` produces tasks, not code. After approval, hand off explicitly:
 
-- **To `incremental-implementation`** — the default. It works the frontier, one slice at a time, landing each as a working change.
-- **To `test-driven-development`** — when the PRD's Testing Strategy calls for test-first work on specific tasks.
+- Work the task graph frontier, one vertical slice at a time, landing each as a verified, working change.
+- Follow test-driven development (TDD) for tasks that specify tests in their verification block.
+- For UI tasks, consult `docs/design.md` produced by `get-design` for design tokens and component states.
 
 Name the first task to start with, and say which task is blocked by it.
 

@@ -43,11 +43,10 @@ Prefer:
 
 ## Composition with Viserys
 
-- Before implementation: `get-prd` supplies product requirements; `get-design shape/new` supplies visual direction.
-- During implementation: `frontend-ui-engineering` supplies component architecture, state, accessibility mechanics, and responsive code.
+- Requirements: `get-prd` supplies product requirements and entity models in `docs/PRD.md`.
+- Visual & Design: `get-design` supplies bespoke visual direction, design tokens, responsive breakpoints, and component state specifications in `docs/design.md`.
+- Tasks & Execution: `get-tasks` decomposes the approved PRD and design direction into executable task files.
 - Verification: run the surface in a browser and capture runtime evidence with the tooling available in the harness.
-- Performance: `performance-optimization` applies when measurement reveals a bottleneck.
-- Review: `code-review-and-quality` checks code-level correctness after design verification.
 
 ## Rule loading
 

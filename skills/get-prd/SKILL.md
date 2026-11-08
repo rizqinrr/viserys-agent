@@ -283,7 +283,7 @@ Write the PRD using the template in the next section. Then:
    - "Sure, let's go." -> Often a polite exit, not an endorsement. Same follow-up.
    - Silence followed by "okay let's start." -> The user has given up, not converged. Stop and ask whether you missed something.
 3. **If corrected, fold it in and restate.** Loop until you get an explicit yes.
-4. **After approval, hand off.** Point the user at `get-tasks` to break the PRD into ordered tasks. Mention other skills likely to apply: `api-and-interface-design` if modules have boundaries, `get-design` before frontend implementation when visual direction is unresolved, `frontend-ui-engineering` for UI implementation, and `security-and-hardening` if there is auth or user input.
+4. **After approval, hand off.** Point the user at `get-tasks` to break the approved PRD into ordered vertical tasks, and mention `get-design` before frontend implementation if visual direction or design tokens need definition.
 
 **Exit condition:** the PRD file exists at the agreed path and the user has given an explicit yes.
 
