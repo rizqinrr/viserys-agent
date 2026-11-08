@@ -10,203 +10,181 @@
 
 # Viserys
 
-Engineering workflow pack untuk AI coding agents. Viserys memberi agent proses yang konsisten untuk mendefinisikan masalah, merencanakan pekerjaan, mengimplementasikan perubahan, memverifikasi hasil, melakukan review, dan menyiapkan release.
+[![Agent Skills](https://img.shields.io/badge/skills.sh-rizqinrr%2Fviserys--agent-18181b?logo=vercel&logoColor=white)](https://skills.sh/rizqinrr/viserys-agent)
+[![Showcase Web](https://img.shields.io/badge/demo-GitHub%20Pages-2563eb)](https://rizqinrr.github.io/viserys-agent/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
+[![Tests Passing](https://img.shields.io/badge/tests-62%20passed-brightgreen)](#validation)
+
+Engineering workflow pack untuk AI coding agents. Viserys memberi AI proses rekayasa perangkat lunak yang terstruktur—mencegah agent melakukan *vibe coding* serampangan tanpa spesifikasi, tanpa dekomposisi tugas, dan tanpa standar visual.
 
 ```text
-DEFINE → PLAN → BUILD → VERIFY → REVIEW → SHIP
+INTERVIEW & SPEC (get-prd) ──→ VERTICAL TASK SLICES (get-tasks) ──→ BESPOKE UI SPEC (get-design)
 ```
 
-Core Viserys terdiri dari Markdown dan validator Node.js, tanpa runtime aplikasi atau network dependency. Adapter harness, plugin installation, hooks, browser tooling, dan behavioral evals memiliki prerequisite masing-masing.
+Core Viserys terdiri dari Markdown murni dan validator Node.js tanpa runtime aplikasi atau dependensi network. Kompatibel out-of-the-box dengan Claude Code, Cursor, Windsurf, OpenCode, Gemini CLI, dan Antigravity.
 
-## Isi repository
+---
 
-- **3 core skills** — alur kerja rekayasa terfokus: `get-prd` (spesifikasi), `get-tasks` (dekomposisi tugas), dan `get-design` (arah visual & UI).
-- **7 specialist personas** — planning, review, security, testing, performance, UI, dan dokumentasi.
-- **11 command contracts** — tersedia untuk Claude Code, Gemini CLI, dan Antigravity.
-- **7 shared checklists** — definition of done, security, testing, performance, dan orchestration.
-- **Structural validators dan evals** — menjaga skill, command, persona, artifact path, reference, version, dan routing tetap konsisten.
-- **Optional hooks** — automatic context injection untuk lifecycle yang mendukungnya.
+## Quick Install
 
-## Quick start
+### 1. Universal Install (`npx skills`)
 
-| Harness | Mulai dari | Status |
-|---|---|---|
-| **OpenCode** | Buka repository, tekan `Tab`, pilih `viserys` | Project adapter tersedia; root personas tidak otomatis aktif |
-| **Claude Code** | Install plugin dari checkout lokal | Plugin flow paling lengkap dan diuji di CI |
-| **Gemini CLI** | Gunakan adapter di `.gemini/commands/` | 11 commands tersedia dan structurally tested; runtime E2E belum diverifikasi |
-| **Antigravity** | Gunakan adapter di `commands/` | 11 commands tersedia dan structurally tested; runtime E2E belum diverifikasi |
-| **OMP** | Copy/link skills, agents, dan prompts ke scope OMP | Native compatibility melalui struktur OMP |
-| **Codex** | Gunakan manifest `.codex-plugin/plugin.json` | Skills-only pada level manifest |
+Gunakan package manager skill dari Vercel / Agent Skills ecosystem untuk menambahkan Viserys ke agent pilihan Anda (Claude Code, Cursor, Windsurf, Codex, dll.):
 
-Panduan setup dan batas dukungan: [`docs/installation.md`](docs/installation.md).
+```bash
+# Install semua core skills ke agent aktif
+npx skills add rizqinrr/viserys-agent
 
-### OpenCode project scope
+# Atau install secara spesifik per skill
+npx skills add rizqinrr/viserys-agent --skill get-prd
+```
 
+### 2. OpenCode Project Scope
+
+Buka repositori ini langsung dari OpenCode:
 ```text
-1. Buka root repository ini dari OpenCode.
+1. Buka folder repositori dari OpenCode.
 2. Tekan Tab.
 3. Pilih agent viserys.
 ```
 
-### Claude Code dari checkout lokal
+### 3. Claude Code Plugin
 
+Install langsung dari checkout lokal repositori:
 ```bash
 claude plugin validate .
 claude plugin marketplace add ./
 claude plugin install viserys@viserys --scope user
 ```
 
-## Cara memakai Viserys
+---
 
-### Automatic routing
+## 3 Core Pillars
 
-Minta pekerjaan secara natural. Viserys memilih skill yang cocok dari intent:
+Viserys berfokus pada tiga alur kerja rekayasa berkekuatan tinggi yang menghasilkan deliverable terstandarisasi:
 
-```text
-Bantu debug test yang gagal dan cari root cause-nya.
+```
+get-prd (docs/PRD.md) ──→ get-tasks (tasks/<name>/plan.md) ──→ get-design (docs/design.md)
 ```
 
-```text
-Rancang API pagination yang backward-compatible.
-```
-
-### Direct skill invocation
-
-Sebut skill bila workflow tertentu wajib digunakan:
-
-```text
-Gunakan get-prd untuk mendefinisikan feature ini.
-```
-
-### Commands
-
-| Tujuan | Claude Code | Gemini / Antigravity |
+| Skill | Deliverable | Kapan Digunakan |
 |---|---|---|
-| Requirements mendalam | `/get-prd` | `/get-prd` |
-| Database schema | `/get-schema` | `/get-schema` |
-| Executable task files | `/get-tasks` | `/get-tasks` |
-| Incremental build | `/build` | `/build` |
-| Test workflow | `/test` | `/test` |
-| Code review via `maester` | `/review` | `/review` |
-| Pre-launch fan-out | `/ship` | `/ship` |
-| Web performance | `/webperf` | `/webperf` |
-| UI/design workflow | `/get-design` | `/get-design` |
+| **`get-prd`** | `docs/PRD.md` | Memulai inisiatif, fitur, atau sistem baru. Menjalankan *structured interview*, validasi problem, ekstraksi intent, identifikasi batasan (NFRs/SLAs), dan perancangan entitas data inti. |
+| **`get-tasks`** | `tasks/<feature>/plan.md` & `task-*.md` | PRD telah disetujui. Memecah spesifikasi menjadi *vertical task slices*, urutan dependensi, kriteria penerimaan terukur, dan gate verifikasi TDD. |
+| **`get-design`** | `docs/design.md` | Merancang antarmuka produk web/aplikasi. Menghapus estetika generik "AI slop", menetapkan token desain unik, breakpoint responsif (mobile-first), dan kelengkapan state interaktif. |
 
-Command behavior dan adapter differences: [`docs/commands.md`](docs/commands.md).
+Detail trigger, batasan, dan kontrak tiap skill: [`docs/skills.md`](docs/skills.md).
 
-## Workflow yang direkomendasikan
+---
 
-### Feature
+## Cara Memakai Viserys
+
+### 1. Natural Language Intent (Automatic Routing)
+
+Cukup ajak bicara agent Anda secara natural, agent akan memilih skill yang sesuai secara otomatis:
 
 ```text
-/get-prd → /get-schema → /get-tasks → /build → /test → /review → /ship
+"Saya mau bikin fitur autentikasi multi-tenant baru, tolong interview saya."
+→ Memanggil get-prd
 ```
-
-### Aplikasi atau sistem baru
 
 ```text
-/get-prd → /get-schema → /get-tasks → implementasi → /review → /ship
+"PRD di docs/PRD.md sudah disetujui, tolong breakdown jadi task yang bisa dieksekusi subagent."
+→ Memanggil get-tasks
 ```
-
-### UI atau redesign
 
 ```text
-/get-design shape <target>
-→ frontend-ui-engineering
-→ verifikasi runtime dengan browser tooling yang tersedia
-→ /review
-→ /webperf bila relevan
-→ /ship
+"Desain antarmuka dashboard monitoring ini, jangan buat yang terlihat generic AI slop."
+→ Memanggil get-design
 ```
 
-### Bug fix
+### 2. Direct Slash Commands
 
-```text
-debugging-and-error-recovery
-→ test-driven-development
-→ /review
-```
+Tersedia slash command untuk Claude Code, Gemini CLI, dan Antigravity:
 
-Recipes lengkap: [`docs/workflows.md`](docs/workflows.md).
+| Perintah | Deskripsi | Target Deliverable |
+|---|---|---|
+| `/get-prd` | Wawancara terstruktur & spesifikasi mendalam | `docs/PRD.md` |
+| `/get-tasks` | Dekomposisi tugas vertikal & verifikasi TDD | `tasks/<feature>/plan.md` |
+| `/get-design` | Arah visual, tokens, dan state antarmuka | `docs/design.md` |
 
-## Personas
+Detail kontrak perintah: [`docs/commands.md`](docs/commands.md).
 
-| Persona | Fokus |
-|---|---|
-| `strategist` | Full planning, dependency graph, task slicing, acceptance criteria |
-| `maester` | Correctness, readability, architecture, security, performance |
-| `kingsguard` | Threat modeling dan vulnerability detection |
-| `prover` | Test strategy, coverage, dan prove-it pattern |
-| `racer` | Core Web Vitals dan web performance |
-| `artisan` | Product UI, visual hierarchy, accessibility, responsive behavior |
-| `chronicler` | ADR, API docs, migration notes, changelog, release documentation |
+---
 
-`/ship` selalu menjalankan `maester`, `kingsguard`, `prover`, dan `chronicler` secara paralel; `artisan` ditambahkan hanya untuk perubahan UI/web. Persona behavior bergantung pada kemampuan subagent harness. Lihat [`docs/personas-and-orchestration.md`](docs/personas-and-orchestration.md).
+## Ekosistem & Komponen Pendukung
 
-## Skills
+Selain 3 core skills, Viserys menyertakan komponen rekayasa pendukung:
 
-| Phase | Skills |
-|---|---|
-| Tahap | Skill & Output |
-|---|---|
-| **DEFINE** | `get-prd` → Menghasilkan `docs/PRD.md` (spesifikasi, problem statement, batasan, entitas data) |
-| **PLAN** | `get-tasks` → Menghasilkan `tasks/<feature>/plan.md` & `task-*.md` (dekomposisi tugas vertikal & verifikasi) |
-| **DESIGN** | `get-design` → Menghasilkan `docs/design.md` (arah visual anti-slop, tokens, tata letak, state interaktif) |
+- **7 Specialist Personas** (`agents/`) — persona prompt ahli untuk subagent (`strategist`, `maester`, `kingsguard`, `prover`, `racer`, `artisan`, `chronicler`).
+- **7 Shared Checklists** (`references/`) — checklist siap pakai untuk security, testing, Core Web Vitals, definition of done, dan orchestrasi.
+- **Structural Validators & Evals** (`scripts/`, `evals/`) — suite pengujian otomatis untuk memverifikasi konsistensi routing, format frontmatter, versioning, dan trigger rank-1.
 
-Trigger, boundary, dan output tiap skill: [`docs/skills.md`](docs/skills.md).
+---
 
-## Repository map
+## Matriks Dukungan Harness
+
+| Platform / Agent | Metode Integrasi | Status |
+|---|---|---|
+| **Claude Code** | Plugin lokal atau `npx skills add` | Didukung penuh & diuji di CI |
+| **Cursor / Windsurf** | `npx skills add rizqinrr/viserys-agent` | Didukung via open agent-skills standard |
+| **OpenCode** | Project adapter (`.opencode/`) & global config | Didukung |
+| **Antigravity** | Adapter di `commands/` | Structurally validated |
+| **Gemini CLI** | Adapter di `.gemini/commands/` | Structurally validated |
+
+Panduan instalasi lengkap: [`docs/installation.md`](docs/installation.md).
+
+---
+
+## Repository Map
 
 | Path | Isi |
 |---|---|
 | `skills/` | 3 core workflow skills (`get-prd`, `get-tasks`, `get-design`) dan per-skill references |
 | `agents/` | 7 specialist persona prompts |
+| `site/` | Web showcase & viewer interaktif untuk GitHub Pages |
+| `references/` | Shared checklists dan panduan orkestrasi |
 | `.claude/commands/` | Claude Code command adapters |
 | `.gemini/commands/` | Gemini CLI command adapters |
-| `commands/` | Antigravity command adapters; juga dideklarasikan oleh manifest Claude |
+| `commands/` | Antigravity command adapters |
 | `.opencode/` + `opencode.json` | OpenCode agent/command adapters dan root project config |
-| `.claude-plugin/` | Claude plugin manifest |
-| `.codex-plugin/` | Codex skills manifest |
-| `docs/` | User, maintainer, dan adapter documentation |
-| `references/` | Shared checklists dan orchestration guidance |
-| `evals/` | Deterministic dan optional behavioral evals |
-| `scripts/` | Structural validators, eval runner, dan tests |
-| `hooks/` | Optional lifecycle hooks |
+| `evals/` | Evals suite deterministik & behavioral fixtures |
+| `scripts/` | Validator struktural, eval runner, dan unit test suites |
+| `docs/` | Dokumentasi spesifikasi, instalasi, dan authoring |
+
+---
 
 ## Validation
 
+Semua perubahan pada repositori dijaga oleh validator deterministik:
+
 ```bash
+# Validasi struktur skill, perintah, dan manifest
 node scripts/validate-skills.js
 node scripts/validate-commands.js
 node scripts/validate-personas.js
 node scripts/validate-artifact-paths.js
 node scripts/validate-reference-links.js
 node scripts/validate-versions.js
+
+# Validasi trigger evals (Tier-2)
 node scripts/run-evals.js --min-rank1 95
+
+# Unit test suites (62 tests)
 node --test scripts/*-test.js scripts/lib/*-test.js
 ```
 
-CI juga memvalidasi Claude plugin manifest dan installation flow. Detail validation contract: [`CONTRIBUTING.md`](CONTRIBUTING.md#validasi).
+---
 
-## Community
+## Community & Links
 
-Butuh bantuan, ingin berdiskusi, atau berbagi pengalaman memakai Viserys? [Join Discord Viserys](https://discord.gg/WR6rg5YAy).
+- **Web Showcase**: [https://rizqinrr.github.io/viserys-agent/](https://rizqinrr.github.io/viserys-agent/)
+- **Skills.sh Registry**: [https://skills.sh/rizqinrr/viserys-agent](https://skills.sh/rizqinrr/viserys-agent)
+- **Discord Community**: [Join Discord Viserys](https://discord.gg/WR6rg5YAy)
 
-## Documentation
-
-- [Documentation index](docs/README.md)
-- [Installation dan support matrix](docs/installation.md)
-- [Command catalog](docs/commands.md)
-- [Workflow recipes](docs/workflows.md)
-- [Skill catalog](docs/skills.md)
-- [Personas dan orchestration](docs/personas-and-orchestration.md)
-- [Hooks](docs/hooks.md)
-- [Skill anatomy](docs/skill-anatomy.md)
-- [Eval system](evals/README.md)
-- [Contributing](CONTRIBUTING.md)
+---
 
 ## License
 
-Viserys dilisensikan di bawah [Apache License 2.0](LICENSE). Copyright 2026 rizqinrr.
-
-Materi `get-design` mengadaptasi guidance Apache-2.0 dari Impeccable; atribusi upstream dipertahankan pada file adaptasi yang relevan.
+Viserys dilisensikan di bawah [Apache License 2.0](LICENSE). Copyright 2026 rizqinrr.  
+Materi `get-design` mengadaptasi panduan Apache-2.0 dari Impeccable; atribusi upstream dipertahankan pada file adaptasi yang relevan.
