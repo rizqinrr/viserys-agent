@@ -78,6 +78,12 @@ Use this skill when:
 8. Write and verify     -> files on disk, todos synced, validators green
 ```
 
+### Universal Principles for Task Breakdown
+
+1. **Natural Language Pacing:** Present the breakdown and conversational summaries in the language the user speaks (Indonesian or English), while keeping file names, git terms, and code tokens standard (`task-01.md`, `branch`, `commit`, `TDD`).
+2. **Autonomous Execution Ready:** Each generated task file in `tasks/<feature>/task-*.md` must be completely self-contained. Any coding agent should be able to read just that single task file, know what files to edit, what tests to run, and what definition of done must be satisfied without guessing.
+3. **Vertical Slices over Horizontal Layers:** Never create tasks that are purely "setup backend" or "setup frontend" in isolation if they cannot be verified end-to-end. Slice vertically (e.g. "Store & Query SKU endpoint with UI trigger") so each task delivers testable value.
+
 **Planning is read-only.** Phases 0 through 7 produce documents and questions, not code. Do not create, edit, or delete any source file during those phases. Writing task files under `tasks/` is the only filesystem change allowed before the user approves. If you find yourself fixing a bug or adding a function while breaking down work, stop: that belongs to post-approval implementation, and it belongs to a task you have not written yet.
 
 

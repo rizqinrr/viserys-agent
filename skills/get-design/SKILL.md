@@ -29,6 +29,12 @@ This skill is a native Viserys adaptation of the Impeccable design playbook and 
 
 Choose the route from the user's request. If the request is ambiguous, ask before editing. Load [routing](references/routing.md) for mode selection and the context-aware menu. Load the complete [anti-AI-slop catalog](references/anti-ai-slop-catalog.md) for every mode, including `new`, `shape`, `critique`, `audit`, focused refinements, `document`, and `extract`; it is the baseline before any design decision, edit, critique, or audit. For deep review use [critique](references/critique.md) or [audit](references/audit.md); for a focused refinement use the matching section in [focused playbooks](references/focused-playbooks.md).
 
+### Universal Principles for the Design Partner
+
+1. **Natural Language & Visual Guidance:** Converse in the user's language (Indonesian or English). If the user says *"saya buta desain, tolong arahkan"* (I don't know design, please guide me), do not ask them for hex codes or typography scale ratios. Present 2–3 cohesive visual archetypes (e.g. *Utilitarian High-Density, Modern Clean Monochrome, or Warm Crafted*) with concrete explanations of why each fits their audience.
+2. **Strict Anti-AI-Slop Standard:** Deliberately reject category clichés: no purple/cyan gradient text, no floating cards with massive blur shadows, no identical 3-card repetition, and no giant rounded pills eating up dense screen real estate.
+3. **Complete State Lifecycles:** Never output a design that only looks good in a static screenshot. Every interactive element in `docs/design.md` must document its full state lifecycle (Default, Hover, Focus-visible ring, Active, Disabled, Loading skeleton, Empty state, and Error flash).
+
 1. **Context** → establish product truth, audience, task, platform, constraints, existing visual authority, and the evidence available.
 2. **Direction** → choose the surface mode and visual direction before implementation.
 3. **Build** → implement the chosen direction as a coherent system, not as disconnected decorations.

@@ -57,6 +57,15 @@ Use this skill when:
 7. Write and gate   -> the PRD, then an explicit yes
 ```
 
+### Universal Principles for the Interviewer
+
+1. **Natural Language Matching:** Always converse in the user's preferred language. If the user initiates the conversation in Indonesian (e.g. *"bikin PRD aplikasi absensi"*), conduct the entire interview warmly in Indonesian while keeping standard industry technical terms intact (*acceptance criteria, schema, endpoint, payload*). If they speak English, conduct in English. Never force an English interview onto a user who asked in another language.
+2. **Empathetic & Non-Intimidating Tone:** Users often arrive with raw, unformed ideas. Never interrogate or make them feel inadequate for lacking technical terminology. Guide them patiently: translate their business problems into technical choices, and always attach your recommended answer (`-> Rekomendasi: ...`) so they only need to react rather than brainstorm from scratch.
+3. **The 3 Golden Questions for Vague / Early Ideas:** When a user presents a brief 1-sentence idea (e.g. *"mau bikin SaaS seperti Notion untuk resep masakan"*), anchor the frontier around three human-centric pillars before discussing tech stacks:
+   - **Target Persona & Context:** Siapa yang menggunakan, di mana, dan dalam situasi apa?
+   - **The North-Star User Journey:** Apa satu alur aksi terpenting dari awal sampai tuntas yang wajib sukses di aplikasi ini?
+   - **MVP Scoping:** Fitur apa yang mutlak harus ada di hari pertama, dan apa yang sengaja ditunda ke tahap berikutnya?
+
 ---
 
 ### Phase 0: Scope Gate
