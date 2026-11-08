@@ -1,0 +1,16 @@
+{
+  "name": "viserys",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Viserys: Engineering Workflow Pack for AI Coding Agents",
+  "scripts": {
+    "test": "node scripts/validate-skills.js && node scripts/validate-commands.js && node scripts/validate-personas.js && node scripts/validate-artifact-paths.js && node scripts/validate-reference-links.js && node scripts/validate-versions.js && node scripts/run-evals.js --min-rank1 95 && node --test scripts/*-test.js scripts/lib/*-test.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "capture:portfolio": "node scripts/capture-portfolio.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0"
+  }
+}

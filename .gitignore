@@ -8,3 +8,7 @@ node_modules/
 evals/results/
 tasks/
 __pycache__/
+test-results/
+playwright-report/
+blob-report/
+.playwright/
