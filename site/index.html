@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viserys — Engineering Workflow Pack for AI Coding Agents</title>
+  <meta name="description" content="Turn vague requirements into production-ready software through structured PRDs, vertical task slicing, and anti-slop design specifications.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="brand">
+        <span class="brand-crest">⚔</span>
+        <span class="brand-name">VISERYS</span>
+        <span class="badge">v0.1.0</span>
+      </div>
+      <nav class="nav">
+        <a href="#workflow">Workflow</a>
+        <a href="#simulator">Interactive Showcase</a>
+        <a href="#compatibility">Agents</a>
+        <a href="https://github.com/rizqinrr/viserys-agent" target="_blank" rel="noopener" class="github-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container hero-container">
+      <div class="hero-tagline">
+        <span class="tag-pill">Self-Contained Engineering Workflow Pack</span>
+      </div>
+      <h1 class="hero-title">Engineering Discipline for AI Coding Agents</h1>
+      <p class="hero-subtitle">
+        AI coding assistants excel at code generation, but often fail at requirement scoping, architectural decomposition, and bespoke visual design. Viserys embeds senior engineering rigor into your AI workflow through three interconnected skills.
+      </p>
+
+      <!-- Terminal Install Box -->
+      <div class="install-box">
+        <div class="install-header">
+          <div class="window-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="terminal-title">Universal Installation (NPX)</span>
+        </div>
+        <div class="install-body">
+          <div class="code-line">
+            <span class="prompt-symbol">$</span>
+            <code id="install-cmd">npx skills add rizqinrr/viserys-agent</code>
+          </div>
+          <button class="copy-btn" id="copy-btn" aria-label="Copy install command">
+            <span class="copy-icon">📋</span>
+            <span class="copy-text">Copy</span>
+          </button>
+        </div>
+      </div>
+      <p class="install-caption">Installs into Claude Code, Antigravity, OpenCode, Cursor, Codex, and 75+ coding agents.</p>
+    </div>
+  </section>
+
+  <!-- 3-Pillar Workflow Overview -->
+  <section class="workflow-section" id="workflow">
+    <div class="container">
+      <div class="section-heading">
+        <h2>The Three Core Pillars</h2>
+        <p>Three sequential workflows producing concrete, audited markdown artifacts before any code is generated.</p>
+      </div>
+
+      <div class="workflow-grid">
+        <!-- Card 1 -->
+        <div class="workflow-card">
+          <div class="card-step">01 / DEFINE</div>
+          <h3 class="card-title">get-prd</h3>
+          <p class="card-desc">
+            Conducts a deep design-tree interview to extract true intent, challenge vague requirements, surface hidden constraints, and map core data entities.
+          </p>
+          <div class="card-artifact">
+            <span class="artifact-label">Deliverable:</span>
+            <code>docs/PRD.md</code>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="workflow-card">
+          <div class="card-step">02 / PLAN</div>
+          <h3 class="card-title">get-tasks</h3>
+          <p class="card-desc">
+            Decomposes the approved PRD into autonomous vertical slices. Orders tasks by strict dependency, equips each slice with TDD verification, and guards quality.
+          </p>
+          <div class="card-artifact">
+            <span class="artifact-label">Deliverable:</span>
+            <code>tasks/*.md & plan.md</code>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="workflow-card">
+          <div class="card-step">03 / DESIGN</div>
+          <h3 class="card-title">get-design</h3>
+          <p class="card-desc">
+            Interviews you on product aesthetics, eliminates generic AI aesthetic slop, and outputs bespoke design tokens, responsive breakpoints, and full state lifecycles.
+          </p>
+          <div class="card-artifact">
+            <span class="artifact-label">Deliverable:</span>
+            <code>docs/design.md</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Simulator Section -->
+  <section class="simulator-section" id="simulator">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Interactive Artifact Showcase</h2>
+        <p>Explore how Viserys guides the agent conversation and see the exact artifacts generated at each stage.</p>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="simulator-tabs">
+        <button class="sim-tab active" data-tab="tab-prd">
+          <span class="tab-num">1</span> get-prd
+        </button>
+        <button class="sim-tab" data-tab="tab-tasks">
+          <span class="tab-num">2</span> get-tasks
+        </button>
+        <button class="sim-tab" data-tab="tab-design">
+          <span class="tab-num">3</span> get-design
+        </button>
+      </div>
+
+      <!-- Simulator Panels -->
+      <div class="simulator-display">
+        
+        <!-- Panel 1: PRD -->
+        <div class="sim-panel active" id="tab-prd">
+          <div class="split-view">
+            <div class="split-col chat-side">
+              <div class="panel-header">Interactive Dialogue Simulation</div>
+              <div class="chat-thread">
+                <div class="chat-bubble user">
+                  <strong>User:</strong> Saya mau bikin SaaS inventory tracker sederhana untuk toko retail kecil.
+                </div>
+                <div class="chat-bubble agent">
+                  <strong>Viserys (get-prd):</strong>
+                  <div class="agent-hypothesis">
+                    <strong>HYPOTHESIS:</strong> Anda memerlukan pencatatan stok multi-toko dengan peringatan barang menipis.<br>
+                    <strong>CONFIDENCE:</strong> ~35% (Kurang: siapa pengguna utama & sumber input barang).
+                  </div>
+                  <p><strong>Q1 - Target Pengguna:</strong> Siapa yang akan menginput barang setiap hari — kasir di meja kasir, staf gudang via HP, atau Anda sendiri?</p>
+                  <p class="rec">↳ Rekomendasi: Kasir di meja kasir via desktop, karena input barcode saat transaksi adalah waktu paling akurat.</p>
+                </div>
+                <div class="chat-bubble user">
+                  <strong>User:</strong> Kasir langsung via desktop saat barang datang dan laku.
+                </div>
+                <div class="chat-bubble agent">
+                  <strong>Viserys (get-prd):</strong>
+                  <p>Sip, confidence naik ke 70%. Sekarang kita petakan <strong>Core Data Entities</strong>: <code>Product</code>, <code>StockMovement</code>, dan <code>StoreLocation</code>...</p>
+                </div>
+              </div>
+            </div>
+            <div class="split-col artifact-side">
+              <div class="panel-header">Output Deliverable: <code>docs/PRD.md</code></div>
+              <pre class="markdown-preview"><code># PRD: Retail Inventory Tracker
+
+## Problem Statement
+Small retailers lose track of physical stock discrepancies between point-of-sale transactions and supplier restocks without expensive ERP software.
+
+## Objective
+A fast, single-screen desktop inventory portal for cashiers to log stock updates with sub-second lookups.
+
+## Core Data & Entity Model
+| Entity | Key Attributes | Relationships |
+|---|---|---|
+| Product | id (uuid), sku (unique), name, price | 1-to-many Movements |
+| StockMovement | id, product_id, quantity, type (IN/OUT) | belongs-to Product |
+| StoreLocation | id, name, code | 1-to-many Stocks |
+
+## Constraints & NFRs
+- p95 search latency &lt; 150ms over 50,000 SKUs.
+- Full offline resilience for uncommitted scans.
+- Role-based permissions: Cashier (read/log) vs Owner (admin).</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Tasks -->
+        <div class="sim-panel" id="tab-tasks">
+          <div class="split-view">
+            <div class="split-col chat-side">
+              <div class="panel-header">Decomposition & Dependency Logic</div>
+              <div class="chat-thread">
+                <div class="chat-bubble agent">
+                  <strong>Viserys (get-tasks):</strong>
+                  <p>Membaca <code>docs/PRD.md</code> yang telah disetujui. Memotong sistem menjadi <strong>Vertical Slices</strong> mandiri:</p>
+                  <div class="tree-preview">
+                    Task 01: Database Schema & Migration (Foundation)<br>
+                    &nbsp;&nbsp;├── Task 02: SKU Barcode Search API (Blocked by 01)<br>
+                    &nbsp;&nbsp;└── Task 03: Stock Movement Logger UI (Blocked by 01, 02)<br>
+                    Task 04: Low Stock Alerting System (Blocked by 03)
+                  </div>
+                  <p>Menyiapkan file task atomik dengan acceptance criteria dan checklist verifikasi TDD per task.</p>
+                </div>
+              </div>
+            </div>
+            <div class="split-col artifact-side">
+              <div class="panel-header">Output Deliverable: <code>tasks/inventory/task-02.md</code></div>
+              <pre class="markdown-preview"><code># Task 02: SKU Barcode Search API
+
+## Source
+PRD section: "Core Data & Entity Model" and "Constraints"
+
+## What this delivers
+A cached lookup endpoint that returns product metadata and current stock level by exact SKU or barcode scan in &lt; 100ms.
+
+## Acceptance Criteria
+- [ ] GET /api/products/search?q=:sku returns 200 with product object
+- [ ] Returns 404 when SKU does not exist
+- [ ] Response payload is sanitized; cached in Redis for 60s
+
+## Verification
+- [ ] Tests pass: `npm test tests/api/search.test.ts`
+- [ ] Build succeeds: `npm run build`
+- [ ] Performance check: response time &lt; 100ms
+- [ ] Security check: input validation against SQLi / injection
+
+## Blocked by
+Task 01 (Database Schema & Migration)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: Design -->
+        <div class="sim-panel" id="tab-design">
+          <div class="split-view">
+            <div class="split-col chat-side">
+              <div class="panel-header">Aesthetic Interview & Anti-Slop System</div>
+              <div class="chat-thread">
+                <div class="chat-bubble agent">
+                  <strong>Viserys (get-design):</strong>
+                  <p>Mari tentukan arah visual untuk antarmuka kasir ini. Aplikasi kasir membutuhkan <strong>kepadatan tinggi (high density)</strong>, kontras tajam, dan navigasi keyboard-first.</p>
+                  <div class="anti-slop-notice">
+                    ⛔ <strong>AI-Slop Clichés Refused:</strong> Tidak menggunakan gradien ungu neon, card mengambang dengan shadow berlebih, atau rounded pill raksasa yang memakan ruang layar.
+                  </div>
+                  <p>Menetapkan tipografi monospace tabular untuk angka stok dan kontras rasio minimal 7:1 untuk kejelasan di bawah lampu toko.</p>
+                </div>
+              </div>
+            </div>
+            <div class="split-col artifact-side">
+              <div class="panel-header">Output Deliverable: <code>docs/design.md</code></div>
+              <pre class="markdown-preview"><code># Design Specification: Retail Inventory Desk
+
+## 1. Visual Thesis & Audience
+- Product Job: Rapid barcode scanning and real-time stock adjustment.
+- Operating Scene: Retail counter with ambient fluorescent lighting; keyboard-only operation.
+- Aesthetic Character: Utilitarian, sharp precision, high information density.
+
+## 2. Design Tokens
+- Color Palette:
+  - Base Obsidian: `#0D1117` (Deep dark background)
+  - Surface Row: `#161B22` (High contrast table row)
+  - Primary Accent: `#2EA043` (Positive stock / in)
+  - Warning Accent: `#DA3633` (Low stock alert)
+  - Text Contrast: `#F0F6FC` (Ratio 13.5:1 against base)
+- Typography:
+  - UI Labels: Plus Jakarta Sans, 13px / 1.4 weight 500
+  - Stock Numbers & Barcode: JetBrains Mono Tabular
+
+## 3. Responsive Breakpoints
+- Desktop (1280px+): Dual-panel scan table with quick keypad
+- Mobile (375px): Single-column emergency stock tally with bottom barcode trigger
+
+## 4. Component Interactive States
+- Scan Row: default, active focus ring (#388BFD 2px solid), error flash (#F85149)</code></pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent Compatibility Matrix -->
+  <section class="compatibility-section" id="compatibility">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Works Across All AI Coding Agents</h2>
+        <p>Viserys adapts natively to your environment without runtime lock-in.</p>
+      </div>
+
+      <div class="agent-badges">
+        <div class="agent-badge">
+          <span class="badge-icon">⚡</span>
+          <span class="agent-name">Claude Code</span>
+          <span class="agent-type">Native Plugin & Commands</span>
+        </div>
+        <div class="agent-badge">
+          <span class="badge-icon">🔮</span>
+          <span class="agent-name">Antigravity</span>
+          <span class="agent-type">Native TOML Commands</span>
+        </div>
+        <div class="agent-badge">
+          <span class="badge-icon">📂</span>
+          <span class="agent-name">OpenCode</span>
+          <span class="agent-type">Primary Agent Adapter</span>
+        </div>
+        <div class="agent-badge">
+          <span class="badge-icon">🎯</span>
+          <span class="agent-name">Cursor</span>
+          <span class="agent-type">Agent Skills Standard</span>
+        </div>
+        <div class="agent-badge">
+          <span class="badge-icon">💎</span>
+          <span class="agent-name">Codex</span>
+          <span class="agent-type">Plugin Manifest Ready</span>
+        </div>
+        <div class="agent-badge">
+          <span class="badge-icon">✨</span>
+          <span class="agent-name">Gemini CLI</span>
+          <span class="agent-type">Native TOML Commands</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-left">
+        <p><strong>VISERYS</strong> — Open Source Engineering Workflow Pack.</p>
+        <p class="license">Licensed under <a href="https://github.com/rizqinrr/viserys-agent/blob/main/LICENSE" target="_blank" rel="noopener">Apache-2.0</a>.</p>
+      </div>
+      <div class="footer-right">
+        <a href="https://github.com/rizqinrr/viserys-agent" target="_blank" rel="noopener">GitHub Repository</a>
+        <a href="https://skills.sh" target="_blank" rel="noopener">skills.sh Directory</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
